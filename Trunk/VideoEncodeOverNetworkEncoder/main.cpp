@@ -56,7 +56,7 @@ void ListenAndPaint( void *arg )
 		int RecvCount;
 		do {
 			RecvCount = NetworkListener.receivePackets( (char*)ZlibInputBuffer );
-		}while( RecvCount >= 0 );
+		}while( RecvCount == 0 );
 
 		if( RecvCount < 0 )
 			break;
@@ -126,6 +126,10 @@ void ListenAndPaint( void *arg )
 
 	if( zlib_stream.state != Z_NULL && inflateEnd(&zlib_stream) != Z_OK )
 		assert( false );
+
+	NetworkListener.~ClientNetwork();
+
+	exit(0);
 }
 
 void MyMain()

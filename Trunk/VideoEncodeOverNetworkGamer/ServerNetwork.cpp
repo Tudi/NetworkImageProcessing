@@ -50,7 +50,7 @@ ServerNetwork::ServerNetwork(void)
     }
 
     // Set the mode of the socket to be nonblocking
-    u_long iMode = 1;
+/*    u_long iMode = 1;
     iResult = ioctlsocket(ListenSocket, FIONBIO, &iMode);
     if (iResult == SOCKET_ERROR) 
 	{

@@ -77,7 +77,7 @@ ClientNetwork::ClientNetwork(void)
     }
 
 	// Set the mode of the socket to be nonblocking
-    u_long iMode = 1;
+/*    u_long iMode = 1;
     iResult = ioctlsocket(ConnectSocket, FIONBIO, &iMode);
     if (iResult == SOCKET_ERROR)
     {
@@ -96,15 +96,19 @@ ClientNetwork::ClientNetwork(void)
 
 ClientNetwork::~ClientNetwork(void)
 {
-	closesocket(ConnectSocket);
-	WSACleanup();
+	if( ConnectSocket != 0 )
+	{
+		closesocket(ConnectSocket);
+		WSACleanup();
+		ConnectSocket = 0;
+	}
 }
 
 int ClientNetwork::receivePackets(char *recvbuf) 
 {
 	iResult = recv( ConnectSocket, recvbuf, GlobalData.MaxPacketSize, 0 );
-//	char test[10];
-//	iResult = recv( ConnectSocket, test, 10, 0 );
+//	char test[ 65535 ];
+//	iResult = recv( ConnectSocket, test, 65535, 0 );
 
 	if ( iResult == 0 )
     {

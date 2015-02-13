@@ -83,18 +83,25 @@ void ScreenCaptureAndSendThread( void *arg )
 	unsigned int LoopCounter = 0;
 	unsigned int FPSSum = 0;
 
+	printf("Waiting for client connection\n");
+	NetworkListener.acceptNewClient();
+
 	GlobalData.ThreadIsRunning = 1;
 	while( GlobalData.ThreadIsRunning == 1 )
 	{
 		unsigned int Start = GetTimer();
-		unsigned int End, ClsEnd, EndCapture,EndResize,EndCompress,EndLoop;
+		unsigned int End, ClsEnd, EndCapture,EndResize,EndCompress,EndNetwork,EndLoop;
 		End = Start;
+
+		if( GlobalData.ShowStatistics == 2 )
+		{
+			system("cls");
+		}
 
 		printf("press 'e' to shut down properly\n" );
 
 		if( GlobalData.ShowStatistics == 2 )
 		{
-			system("cls");
 			ClsEnd = GetTimer();
 			printf( "Statistics : Time required for infoprint : %d. Estimated FPS %d\n", ClsEnd - End, 1000 / ( ClsEnd - End + 1) );
 			End = ClsEnd;
@@ -152,7 +159,7 @@ void ScreenCaptureAndSendThread( void *arg )
 			}
 		}
 
-		NetworkListener.acceptNewClient();
+//		NetworkListener.acceptNewClient();
 
 		if( NetworkListener.HasConnections() == 0 )
 			printf( "Network : Waiting for clients to connect\n" );
@@ -176,6 +183,12 @@ void ScreenCaptureAndSendThread( void *arg )
 				memcpy( ZlibOutputBuffer + sizeof( NetworkPacketHeader ), GlobalData.CapturedScreen->ActiveRGB4ByteImageBuff, GlobalData.CapturedScreen->GetRequiredByteCount() );
 				ph->CompressedSize = GlobalData.CapturedScreen->GetRequiredByteCount();
 				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, GlobalData.CapturedScreen->GetRequiredByteCount() );
+			}
+			if( GlobalData.ShowStatistics == 2 )
+			{
+				EndNetwork = GetTimer();
+				printf( "Statistics : Time required for network send : %d. Estimated FPS %d\n", EndNetwork - End, 1000 / ( EndNetwork - End + 1) );
+				End = EndNetwork;
 			}
 		}
 
