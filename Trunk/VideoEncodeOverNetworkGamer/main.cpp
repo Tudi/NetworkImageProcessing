@@ -197,6 +197,8 @@ void ScreenCaptureAndSendThread( void *arg )
 		assert( false );
 
 	WSACleanup();
+
+	GlobalData.ThreadIsRunning = 0;
 }
 
 void main()
@@ -210,6 +212,16 @@ void main()
 	do {
 		c = _getch();
 	}while( c != 'e' );
+
+	//wait for thread to shut down
+	GlobalData.ThreadIsRunning = 2;
+
+	int AntiDeadlock = 10;
+	while( GlobalData.ThreadIsRunning != 0 && AntiDeadlock > 0 )
+	{
+		Sleep( 1000 );
+		AntiDeadlock--;
+	}
 
 	printf("Shut down complete\n");
 }
