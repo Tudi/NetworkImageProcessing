@@ -4,18 +4,15 @@
 #include "NetworkServices.h"
 #include <ws2tcpip.h>
 #include <map>
-//#include "NetworkData.h"
-using namespace std; 
 #pragma comment (lib, "Ws2_32.lib")
 
-//#define DEFAULT_BUFLEN 512
-//#define DEFAULT_PORT "6881" 
 #pragma pack(push,1)
 struct NetworkPacketHeader
 {
 	int Version;
 	int Width,Stride,Height,PixelByteCount;
 	int CompressionStrength;
+	int CompressedSize;
 };
 #pragma pack(pop)
 
@@ -34,7 +31,7 @@ public:
 //    int receiveData(unsigned int client_id, char * recvbuf);
 	
 	// accept new connections
-    bool acceptNewClient(unsigned int & id);
+    bool acceptNewClient();
 
     // Socket to listen for new connections
     SOCKET ListenSocket;

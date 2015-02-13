@@ -30,7 +30,7 @@ ShowStatistics=2
 
 @ The IP of the PC you will use to encode
 EncoderIP=192.168.2.21
-EncoderPort=6884
+EncoderPort=6888
 MaxNetworkPacketSize=14440000
 
 @ Best Speed Setup : Resize the images as much as you can. Use Resize method 1. If image size is small enough than do not use compression when sending over network.

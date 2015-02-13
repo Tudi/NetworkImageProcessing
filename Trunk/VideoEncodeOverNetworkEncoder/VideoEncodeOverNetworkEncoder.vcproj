@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -60,6 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="zlib_d.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -132,6 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="zlib.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -171,6 +173,34 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\ClientNetwork.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ClientNetwork.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IniReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\IniReader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PreciseTimer.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PreciseTimer.h"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -192,6 +222,10 @@
 			</File>
 			<File
 				RelativePath=".\VideoEncodeOverNetworkEncoder.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\zlib.h"
 				>
 			</File>
 		</Filter>

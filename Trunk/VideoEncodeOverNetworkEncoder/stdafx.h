@@ -16,6 +16,29 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <stdio.h>
+#include <process.h>
+#include <atlimage.h>
+#include <assert.h>
 
+#include "IniReader.h"
+#include "PreciseTimer.h"
+#include "zlib.h"
+#include "ClientNetwork.h"
 
-// TODO: reference additional headers your program requires here
+void MyMain();
+
+struct GlobalStore
+{
+	HWND	WndSrc;
+	int		FPSLimit;
+	char	*CapturePCIP;
+	char	*CapturePCPort;
+	int		MaxPacketSize;
+	int		ThreadIsRunning;
+	int		ShowStatistics;
+};
+
+extern GlobalStore GlobalData;
+
+#define RGB_BYTE_COUNT 4

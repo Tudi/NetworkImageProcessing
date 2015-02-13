@@ -50,7 +50,6 @@ ServerNetwork::ServerNetwork(void)
     }
 
     // Set the mode of the socket to be nonblocking
-	/*
     u_long iMode = 1;
     iResult = ioctlsocket(ListenSocket, FIONBIO, &iMode);
     if (iResult == SOCKET_ERROR) 
@@ -59,7 +58,7 @@ ServerNetwork::ServerNetwork(void)
         closesocket(ListenSocket);
         WSACleanup();
         exit(1);
-    }*/
+    }/**/
 
     // Setup the TCP listening socket
     iResult = bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
@@ -97,7 +96,8 @@ ServerNetwork::~ServerNetwork(void)
 }
 
 // accept new connections
-bool ServerNetwork::acceptNewClient(unsigned int & id)
+static int ClientNr = 0;
+bool ServerNetwork::acceptNewClient()
 {
     // if client waiting, accept the connection and save the socket
     ClientSocket = accept(ListenSocket,NULL,NULL);
@@ -109,7 +109,8 @@ bool ServerNetwork::acceptNewClient(unsigned int & id)
         setsockopt( ClientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 
         // insert new client into session id table
-        sessions.insert( pair<unsigned int, SOCKET>(id, ClientSocket) );
+		sessions.insert( std::pair<unsigned int, SOCKET>( ClientNr, ClientSocket) );
+		ClientNr++;
 
         return true;
     }
@@ -131,8 +132,8 @@ void ServerNetwork::sendToAll(char *packets, int totalSize)
 
         if (iSendResult == SOCKET_ERROR) 
         {
-            printf("send failed with error: %d\n", WSAGetLastError());
-            closesocket(currentSocket);
+			printf("Client %d. Send failed with error: %d\n", iter->first, WSAGetLastError() );
+            closesocket( currentSocket );
         }
     }
 }

@@ -4,6 +4,8 @@
 #include "stdafx.h"
 #include "VideoEncodeOverNetworkEncoder.h"
 
+GlobalStore GlobalData;
+
 #define MAX_LOADSTRING 100
 
 // Global Variables:
@@ -41,6 +43,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_VIDEOENCODEOVERNETWORKENCODER));
+
+	MyMain();
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -118,6 +122,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ShowWindow(hWnd, nCmdShow);
    UpdateWindow(hWnd);
 
+   GlobalData.WndSrc = hWnd;
+
    return TRUE;
 }
 
@@ -149,6 +155,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_EXIT:
+			GlobalData.ThreadIsRunning = 0;
 			DestroyWindow(hWnd);
 			break;
 		default:
@@ -161,6 +168,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
+		GlobalData.ThreadIsRunning = 0;
 		PostQuitMessage(0);
 		break;
 	default:

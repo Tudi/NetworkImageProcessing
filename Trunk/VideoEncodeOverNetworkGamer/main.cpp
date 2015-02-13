@@ -84,7 +84,6 @@ void ScreenCaptureAndSendThread( void *arg )
 	unsigned int FPSSum = 0;
 
 	GlobalData.ThreadIsRunning = 1;
-	system("MODE CON COLS=5 LINES=2");
 	while( GlobalData.ThreadIsRunning == 1 )
 	{
 		unsigned int Start = GetTimer();
@@ -131,28 +130,18 @@ void ScreenCaptureAndSendThread( void *arg )
 
 			// set up zlib_stream pointers
 			zlib_stream.next_out  = (Bytef*)ZlibOutputBuffer + sizeof( NetworkPacketHeader );
-			zlib_stream.avail_out = SrcWidth * SrcHeight * RGB_BYTE_COUNT;
+			zlib_stream.avail_out = SrcWidth * SrcHeight * RGB_BYTE_COUNT - sizeof( NetworkPacketHeader );
 			zlib_stream.next_in   = (Bytef*)GlobalData.CapturedScreen->ActiveRGB4ByteImageBuff;
 			zlib_stream.avail_in  = GlobalData.CapturedScreen->GetRequiredByteCount();
 
 			//deflate
-			int ret = deflate(&zlib_stream, Z_FINISH); 
+			int ret = deflate( &zlib_stream, Z_FINISH ); 
 
 			//for some strange reason we did not manage to deflate it : destination buffer too small probably
 			if( ret != Z_STREAM_END ) 
 				assert( 0 );
 
 			assert( zlib_stream.avail_out != 0 && zlib_stream.avail_in == 0 );
-
-			//check if we got an even larger output then input. If so then we send it uncompressed
-//			if( zlib_stream.total_out + 4 > size ) 
-//				return false;
-
-			// fill in the full size of the compressed stream
-//			*(uint32*)&zlib_update_buffer[0] = size;
-
-			// send it
-//			m_session->OutPacket(SMSG_COMPRESSED_UPDATE_OBJECT, (uint16)zlib_stream.total_out + 4, zlib_update_buffer);
 
 			if( GlobalData.ShowStatistics == 2 )
 			{
@@ -162,6 +151,8 @@ void ScreenCaptureAndSendThread( void *arg )
 				End = EndCompress;
 			}
 		}
+
+		NetworkListener.acceptNewClient();
 
 		if( NetworkListener.HasConnections() == 0 )
 			printf( "Network : Waiting for clients to connect\n" );
@@ -175,11 +166,15 @@ void ScreenCaptureAndSendThread( void *arg )
 			ph->PixelByteCount = GlobalData.CapturedScreen->ActiveImagePixelByteCount;
 			ph->Stride = GlobalData.CapturedScreen->ActiveImageStride;
 
-			if( zlib_stream.avail_out != 0 && zlib_stream.avail_in == 0 && zlib_stream.avail_out < GlobalData.CapturedScreen->GetRequiredByteCount() )
-				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, zlib_stream.avail_out );
+			if( zlib_stream.avail_out != 0 && zlib_stream.avail_in == 0 && zlib_stream.total_out < GlobalData.CapturedScreen->GetRequiredByteCount() )
+			{
+				ph->CompressedSize = zlib_stream.total_out;
+				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, sizeof( NetworkPacketHeader ) + zlib_stream.total_out );
+			}
 			else
 			{
 				memcpy( ZlibOutputBuffer + sizeof( NetworkPacketHeader ), GlobalData.CapturedScreen->ActiveRGB4ByteImageBuff, GlobalData.CapturedScreen->GetRequiredByteCount() );
+				ph->CompressedSize = GlobalData.CapturedScreen->GetRequiredByteCount();
 				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, GlobalData.CapturedScreen->GetRequiredByteCount() );
 			}
 		}
