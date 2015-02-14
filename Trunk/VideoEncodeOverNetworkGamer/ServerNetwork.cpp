@@ -165,10 +165,12 @@ void ServerNetwork::sendToAll(char *packets, int totalSize)
 			sessions.erase( iter ); 
 			return;
         }
+/*
 		int ReplyFromClient[4];
         iSendResult = recv( currentSocket, (char*)ReplyFromClient, sizeof( ReplyFromClient ), 0 );
 		if( GlobalData.ShowStatistics == 2 )
 			printf( "Statistics : Encoder avg render speed %d\n", ReplyFromClient[0] );
+			*/
     }
 }
 

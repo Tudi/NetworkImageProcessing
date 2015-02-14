@@ -144,7 +144,9 @@ void ResampleRGBLiniar4to5BitsDownsample( unsigned char *psrc, unsigned char *pd
 //			*(unsigned int*)&dst[ x * 3 ] = tsrc[ converted_col_index ];
 //			*(unsigned int*)&dst[ x * 3 ] = tsrc[ converted_col_index ] & 0x00FEFEFE;
 //			*(unsigned int*)&dst[ x * 3 ] = tsrc[ converted_col_index ] & 0x00FCFCFC;
-			*(unsigned int*)&dst[ x * 3 ] = tsrc[ converted_col_index ] & 0x00F8F8F8;
+//			*(unsigned int*)&dst[ x * 3 ] = tsrc[ converted_col_index ] & 0x00F8F8F8;
+//			*(unsigned int*)&dst[ x * 3 ] = tsrc[ converted_col_index ] & 0x00F0F0F0;
+			*(unsigned int*)&dst[ x * 3 ] = tsrc[ converted_col_index ] & GlobalData.ColorFilterMask;
 			stacking_precission_x += int_conv_x;
 		}
 	}

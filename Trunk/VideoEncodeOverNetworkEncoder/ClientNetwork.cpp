@@ -61,13 +61,7 @@ ClientNetwork::ClientNetwork(void)
 		int optlen = sizeof(MaxSocketBufferSize);
 		iResult = getsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, (char*)&MaxSocketBufferSize, &optlen );
 
-//		timeval tv;
-//		tv.tv_sec = 10; 
-//		setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVTIMEO,(const char *)&tv,sizeof(tv));
-//		tv.tv_sec = 10; 
-//		setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDTIMEO,(const char *)&tv,sizeof(tv));
-
-        // Connect to server.
+		// Connect to server.
         iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 
         if (iResult == SOCKET_ERROR)
@@ -158,4 +152,54 @@ int ClientNetwork::ReplyToSender( char *packets, int totalSize )
         closesocket( ConnectSocket );
     }
 	return iSendResult;
+}
+
+int ClientNetwork::ReceivePacketNonBlocking( char *recvbuf )
+{
+	int WriteIndex = 0;
+	int SumRead = 0;
+	int RequiredRead = 0;
+	do{
+TRY_MORE_READ_ON_LACK_OF_DATA:
+		unsigned int Start = GetTimer();
+		if( WriteIndex == 0 )
+			iResult = recv( ConnectSocket, &recvbuf[WriteIndex], sizeof( NetworkPacketHeader ), 0 );
+		else
+			iResult = recv( ConnectSocket, &recvbuf[WriteIndex], RequiredRead - SumRead, 0 );
+
+		if ( iResult == 0 )
+		{
+			printf( "Connection closed\n" );
+			closesocket( ConnectSocket );
+			WSACleanup();
+	//		exit(1);
+			return iResult;
+		}
+		else if( iResult < 0 )
+		{
+			int iResult2 = WSAGetLastError();
+			if( iResult2 == WSAEWOULDBLOCK )
+			{
+				Sleep( 1 );
+				printf( "Need more data from server\n" );
+				goto TRY_MORE_READ_ON_LACK_OF_DATA;
+//				return 0;
+			}
+			printf( "recv failed: %d - %d\n", iResult, iResult2 );
+			closesocket( ConnectSocket );
+			WSACleanup();
+	//		exit(1);
+			return iResult;
+		}
+		if( WriteIndex == 0 )
+		{
+			NetworkPacketHeader *ph = (NetworkPacketHeader *)recvbuf;
+			RequiredRead = ph->PacketSize;
+		}
+		WriteIndex += iResult;
+		SumRead += iResult;
+		unsigned int End = GetTimer();
+		printf("network packet fragment size %d, received in %d seconds\n", iResult, End - Start );
+	}while( SumRead < RequiredRead && WriteIndex < GlobalData.MaxPacketSize );
+    return SumRead;
 }

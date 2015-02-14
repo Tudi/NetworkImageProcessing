@@ -118,7 +118,7 @@ void ScreenCaptureAndSendThread( void *arg )
 		}
 		if( GlobalData.ResizeWidth != -1 )
 		{
-			GlobalData.CapturedScreen->Resample( NewSize, GlobalData.CompressionStrength >= 3 );
+			GlobalData.CapturedScreen->Resample( NewSize );
 			if( GlobalData.ShowStatistics == 2 )
 			{
 				EndResize = GetTimer();
@@ -164,7 +164,7 @@ void ScreenCaptureAndSendThread( void *arg )
 
 		if( NetworkListener.HasConnections() == 0 )
 		{
-			printf( "Network : Waiting for clients to connect\n" );
+//			printf( "Network : Waiting for clients to connect\n" );
 //			NetworkListener.acceptNewClient();
 			break;
 		}
@@ -233,10 +233,11 @@ void main()
 	char c;
 	do {
 		c = _getch();
-	}while( c != 'e' );
+	}while( c != 'e' && GlobalData.ThreadIsRunning != 0 );
 
 	//wait for thread to shut down
-	GlobalData.ThreadIsRunning = 2;
+	if( GlobalData.ThreadIsRunning != 0 )
+		GlobalData.ThreadIsRunning = 2;
 
 	int AntiDeadlock = 10;
 	while( GlobalData.ThreadIsRunning != 0 && AntiDeadlock > 0 )

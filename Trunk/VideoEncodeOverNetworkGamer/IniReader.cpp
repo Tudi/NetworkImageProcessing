@@ -37,6 +37,20 @@ void ConvertLineToParam( char *Line )
 			GlobalData.EncoderPort = _strdup( StrValue );
 //		else if( strstr( Line, "MaxNetworkPacketSize" ) )
 //			GlobalData.MaxPacketSize = atoi( StrValue );
+		else if( strstr( Line, "ReduceColorDepth" ) )
+		{
+			GlobalData.ColorFilterMask = atoi( StrValue );
+			if( GlobalData.ColorFilterMask == 2 ) 
+				GlobalData.ColorFilterMask = 0x00FEFEFE;
+			else if( GlobalData.ColorFilterMask == 3 ) 
+				GlobalData.ColorFilterMask = 0x00FCFCFC;
+			else if( GlobalData.ColorFilterMask == 4 ) 
+				GlobalData.ColorFilterMask = 0x00F8F8F8;
+			else if( GlobalData.ColorFilterMask == 5 ) 
+				GlobalData.ColorFilterMask = 0x00F0F0F0;
+			else
+				GlobalData.ColorFilterMask = 0;
+		}
 	}
 }
 
@@ -60,6 +74,8 @@ int ReadLine( FILE *file, char *Store, int MaxLen )
 
 void LoadSettingsFromFile( )
 {
+	memset( &GlobalData, 0, sizeof( GlobalData ) );
+
 	FILE *inf;
 	errno_t err = fopen_s( &inf, "Config.txt", "rt" );
 	if( inf )

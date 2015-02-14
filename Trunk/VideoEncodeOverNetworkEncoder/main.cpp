@@ -18,6 +18,7 @@ void PaintToWindow( NetworkPacketHeader *ph, unsigned char *Pixels )
 	HBITMAP hDib = CreateDIBSection( hDC, &bmi, DIB_RGB_COLORS, (void **)&buffer, 0, 0);
 	if (buffer == NULL) 
 	{ 
+		return;
 	}
 	HDC hDibDC = CreateCompatibleDC( hDC );
 	HGDIOBJ hOldObj = SelectObject( hDibDC, hDib );
@@ -44,6 +45,9 @@ void PaintToWindow( NetworkPacketHeader *ph, unsigned char *Pixels )
 	int res = BitBlt( hDC, 0, 0, ph->Width, ph->Height, hDibDC, 0, 0, SRCCOPY );
 #endif
 
+	DeleteObject( hOldObj );
+	DeleteDC( hDibDC );
+	DeleteObject( hDib );
 	ReleaseDC( GlobalData.WndSrc, hDC );
 }
 
@@ -125,11 +129,12 @@ void ListenAndPaint( void *arg )
 		End = Start;
 
 		//wait until we have new data on network
-		Sleep( 1000 );
 		int RecvCount;
-//		do {
-			RecvCount = NetworkListener.receivePackets( (char*)ZlibInputBuffer );
-//		}while( RecvCount == 0 );
+#ifndef USE_NETWORK_BUFFERING
+		RecvCount = NetworkListener.receivePackets( (char*)ZlibInputBuffer );
+#else
+		RecvCount = NetworkListener.ReceivePacketNonBlocking( (char*)ZlibInputBuffer );
+#endif
 
 		if( RecvCount < 0 )
 			break;
@@ -145,9 +150,11 @@ void ListenAndPaint( void *arg )
 			End = EndCapture;
 		}
 
+#ifndef USE_NETWORK_BUFFERING
 		int ReplyBuffer[1];
 		ReplyBuffer[0] = 1000 / ( FPSSum / LoopCounter + 1);
 		NetworkListener.ReplyToSender( (char*)ReplyBuffer, sizeof( ReplyBuffer ) );
+#endif
 
 		if( GlobalData.ShowStatistics == 2 )
 		{

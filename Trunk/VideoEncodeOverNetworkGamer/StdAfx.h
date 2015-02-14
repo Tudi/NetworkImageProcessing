@@ -46,6 +46,7 @@ struct GlobalStore
 	CScreenImage	*CapturedScreen;
 	int				ResizeWidth,ResizeHeight;
 	int				ResizeMethod;
+	int				ColorFilterMask;
 	int				CompressionStrength;
 	int				FPSLimit;
 	int				ShowStatistics;

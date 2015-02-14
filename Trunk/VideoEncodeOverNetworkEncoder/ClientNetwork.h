@@ -18,6 +18,8 @@ struct NetworkPacketHeader
 };
 #pragma pack(pop)
 
+#define USE_NETWORK_BUFFERING
+
 class ClientNetwork
 {
 
@@ -34,6 +36,7 @@ public:
     ~ClientNetwork(void);
 
 	int receivePackets(char *);
+	int ReceivePacketNonBlocking( char * );
 	int ReplyToSender(char *, int);
 
 	int MaxSocketBufferSize;

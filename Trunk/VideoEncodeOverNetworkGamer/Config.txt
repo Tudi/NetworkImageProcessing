@@ -5,14 +5,22 @@ WindowName=
 @ In case you are streaming with 20 FPS, and your stream resolution is 720p, that is 1280*720*4*20 = 73728000 bytes per second that needs to be transferred to the secondary PC ( 73 MB / sec is a lot ! )
 @ If you do not wish to resize the captured image that leave this to -1
 @ If you resize, i advise you to maintain aspect ratio to not make the screen look silly
-ResizeToWidth=320
-ResizeToHeight=200
+ResizeToWidth=640
+ResizeToHeight=480
 
 @ Resize algorithm
 @ 1 - Direct Resize. The least CPU usage. It is not encoder friendly !
 @ 2 - 2x tap filtering. Moderate CPU usage. Encoder Friendly
 @ 3 - 3x tap filtering. High CPU usage. Encoder friendly
 ResizeMethod=1
+
+@ Reduce Color depth. Reduces network traffic amount. In some cases it might not be encoder friendly. 
+@ 1 - no reduction
+@ 2 - 7 bits per plane
+@ 3 - 6 bits per plane
+@ 4 - 5 bits per plane
+@ 5 - 4 bits per plane
+ReduceColorDepth=4
 
 @ Use local compression to reduce each frame size ?
 @ 0 - no compression
@@ -29,8 +37,7 @@ FPSLimit=20
 ShowStatistics=2
 
 @ The IP of the PC you will use to encode
-EncoderIP=192.168.2.21
-EncoderPort=6888
+ListenPort=6888
 MaxNetworkPacketSize=14440000
 
 @ Best Speed Setup : Resize the images as much as you can. Use Resize method 1. If image size is small enough than do not use compression when sending over network.
