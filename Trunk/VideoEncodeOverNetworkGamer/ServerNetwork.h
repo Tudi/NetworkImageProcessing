@@ -13,6 +13,7 @@ struct NetworkPacketHeader
 	int Width,Stride,Height,PixelByteCount;
 	int CompressionStrength;
 	int CompressedSize;
+	int	PacketSize;
 };
 #pragma pack(pop)
 
@@ -37,12 +38,14 @@ public:
     SOCKET ListenSocket;
 
     // Socket to give to the clients
-    SOCKET ClientSocket;
+//    SOCKET ClientSocket;
 
     // for error checking return values
     int iResult;
 
     // table to keep track of each client's socket
     std::map<unsigned int, SOCKET> sessions; 
+
+	int MaxSocketBufferSize;
 };
 

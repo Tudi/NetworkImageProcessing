@@ -1,7 +1,80 @@
 #include "StdAfx.h"
 
+//#define USE_SETPIXEL_INSTEAD_BLT 
+
+void PaintToWindow( NetworkPacketHeader *ph, unsigned char *Pixels )
+{
+	BITMAPINFO bmi;
+	memset(&bmi, 0, sizeof(bmi));
+	bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	bmi.bmiHeader.biWidth = ph->Width;
+	bmi.bmiHeader.biHeight = ph->Height;
+	bmi.bmiHeader.biPlanes = 1;
+	bmi.bmiHeader.biBitCount = 32;
+	bmi.bmiHeader.biCompression = BI_RGB;
+
+	HDC hDC = GetDC( GlobalData.WndSrc );
+	char *buffer;
+	HBITMAP hDib = CreateDIBSection( hDC, &bmi, DIB_RGB_COLORS, (void **)&buffer, 0, 0);
+	if (buffer == NULL) 
+	{ 
+	}
+	HDC hDibDC = CreateCompatibleDC( hDC );
+	HGDIOBJ hOldObj = SelectObject( hDibDC, hDib );
+
+	int DstStride = ((bmi.bmiHeader.biWidth * bmi.bmiHeader.biBitCount + 31) / 32) * bmi.bmiHeader.biBitCount / 8;
+	int SrcStride = ph->Stride;
+	for( int y = 0; y < ph->Height; y++ )
+	{
+		unsigned char *src = Pixels + SrcStride * y ;
+		unsigned int *dst = (unsigned int *)( buffer + DstStride * y );
+		for( int x = 0; x < ph->Width; x++ )
+		{
+#ifdef USE_SETPIXEL_INSTEAD_BLT
+			COLORREF crColor = *(unsigned int*)&src[ x * 3 ] & 0x00FFFFFF;
+			SetPixel( hDC, x, y, crColor);
+#else
+			dst[ x ] = *(unsigned int*)&src[ x * 3 ] & 0x00FFFFFF;
+#endif
+		}
+	}
+//	SetDIBits( NULL, hDib, 0, bmi.biHeight, Pixels, &bmi, DIB_RGB_COLORS);
+//	int res = StretchBlt( hDC, 0, 0, ph->Width, ph->Height, hDibDC, 0, 0, ph->Width, ph->Height, SRCCOPY );
+#ifndef USE_SETPIXEL_INSTEAD_BLT
+	int res = BitBlt( hDC, 0, 0, ph->Width, ph->Height, hDibDC, 0, 0, SRCCOPY );
+#endif
+
+	ReleaseDC( GlobalData.WndSrc, hDC );
+}
+
+void TestPaintToWindow()
+{
+	NetworkPacketHeader ph;
+	unsigned char *Pixels;
+
+	ph.Width = 320;
+	ph.Height = 200;
+	ph.PixelByteCount = 3;
+	ph.Stride = ph.Width;
+
+	Pixels = (unsigned char *)malloc( ph.Width * ph.Height * ph.PixelByteCount + 3 );
+	for( int y = 0; y < ph.Height; y++ )
+		for( int x = 0; x < ph.Width; x++ )
+		{
+			*(int*)&Pixels[ ( y * ph.Stride + x ) * 3 ] = RGB( x, x, x );
+		}
+
+//	PaintToWindow( &ph, Pixels );
+	SetWindowPos( GlobalData.WndSrc, 0, 0, 0, ph.Width, ph.Height, SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE );
+	PaintToWindow( &ph, Pixels );
+	free( Pixels );
+}
+
 void ListenAndPaint( void *arg )
 {
+//	TestPaintToWindow();
+//	return;
+
 	FILE *fp;
 	fp=freopen( "Debug.txt", "w" ,stdout );
 	if( fp == NULL ) 
@@ -69,6 +142,8 @@ void ListenAndPaint( void *arg )
 		}
 
 		ph = (NetworkPacketHeader *)ZlibInputBuffer;
+		if( RecvCount != ph->PacketSize )
+			printf( "%d Did not read all data from network %d received instead %d - %d\n", LoopCounter, RecvCount, ph->PacketSize, ph->CompressedSize + sizeof( NetworkPacketHeader ) );
 
 		//is it compressed ?
 		if( ph->CompressionStrength > Z_NO_COMPRESSION )
@@ -109,6 +184,15 @@ void ListenAndPaint( void *arg )
 			printf("UnCompressedSize %d\n", zlib_stream.total_out );
 			SetWindowPos( GlobalData.WndSrc, 0, 0, 0, ph->Width, ph->Height, SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE );
 		}
+		else if( ph->Version == 1 && ph->Width < 2000 && ph->Height < 2000 )
+		{
+			if( ph->CompressionStrength == Z_NO_COMPRESSION )
+				PaintToWindow( ph, ZlibInputBuffer + sizeof( NetworkPacketHeader ) );
+			else
+				PaintToWindow( ph, ZlibOutputBuffer );
+		}
+		else
+			printf( "Something strange with frame %d. Skipped rendering\n", LoopCounter );
 
 		EndLoop = GetTimer();
 		FPSSum += EndLoop - Start;

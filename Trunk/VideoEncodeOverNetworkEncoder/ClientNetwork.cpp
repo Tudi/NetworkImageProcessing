@@ -26,7 +26,7 @@ ClientNetwork::ClientNetwork(void)
 
 	// set address info
     ZeroMemory( &hints, sizeof(hints) );
-    hints.ai_family = AF_INET;
+    hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;  //TCP connection!!!
 
@@ -53,6 +53,13 @@ ClientNetwork::ClientNetwork(void)
             WSACleanup();
             exit(1);
         }
+
+		MaxSocketBufferSize = 8 * 65535;
+		if( setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, (char*)&MaxSocketBufferSize, sizeof(MaxSocketBufferSize) ) == -1 ) 
+			printf( "Error setting socket opts: %s\n", WSAGetLastError() );
+
+		int optlen = sizeof(MaxSocketBufferSize);
+		iResult = getsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, (char*)&MaxSocketBufferSize, &optlen );
 
         // Connect to server.
         iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);

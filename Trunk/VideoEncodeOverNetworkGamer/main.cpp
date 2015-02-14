@@ -173,16 +173,18 @@ void ScreenCaptureAndSendThread( void *arg )
 			ph->PixelByteCount = GlobalData.CapturedScreen->ActiveImagePixelByteCount;
 			ph->Stride = GlobalData.CapturedScreen->ActiveImageStride;
 
-			if( zlib_stream.avail_out != 0 && zlib_stream.avail_in == 0 && zlib_stream.total_out < GlobalData.CapturedScreen->GetRequiredByteCount() )
+			if( GlobalData.CompressionStrength > 0 && zlib_stream.avail_out != 0 && zlib_stream.avail_in == 0 && zlib_stream.total_out < GlobalData.CapturedScreen->GetRequiredByteCount() )
 			{
 				ph->CompressedSize = zlib_stream.total_out;
-				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, sizeof( NetworkPacketHeader ) + zlib_stream.total_out );
+				ph->PacketSize = ph->CompressedSize + sizeof( NetworkPacketHeader );
+				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, ph->CompressedSize + sizeof( NetworkPacketHeader ) );
 			}
 			else
 			{
 				memcpy( ZlibOutputBuffer + sizeof( NetworkPacketHeader ), GlobalData.CapturedScreen->ActiveRGB4ByteImageBuff, GlobalData.CapturedScreen->GetRequiredByteCount() );
 				ph->CompressedSize = GlobalData.CapturedScreen->GetRequiredByteCount();
-				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, GlobalData.CapturedScreen->GetRequiredByteCount() );
+				ph->PacketSize = ph->CompressedSize + sizeof( NetworkPacketHeader );
+				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, ph->CompressedSize + sizeof( NetworkPacketHeader ) );
 			}
 			if( GlobalData.ShowStatistics == 2 )
 			{
@@ -206,7 +208,7 @@ void ScreenCaptureAndSendThread( void *arg )
 		LoopCounter++;
 	}
 
-	if( zlib_stream.state != Z_NULL && deflateEnd(&zlib_stream) != Z_OK)
+	if( GlobalData.CompressionStrength > Z_NO_COMPRESSION && zlib_stream.state != Z_NULL && deflateEnd(&zlib_stream) != Z_OK)
 		assert( false );
 
 	WSACleanup();

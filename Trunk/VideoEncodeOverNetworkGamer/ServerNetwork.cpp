@@ -5,9 +5,11 @@ ServerNetwork::ServerNetwork(void)
 	// create WSADATA object
     WSADATA wsaData;
 
+	MaxSocketBufferSize = 0;
+
     // our sockets for the server
     ListenSocket = INVALID_SOCKET;
-    ClientSocket = INVALID_SOCKET;
+//    ClientSocket = INVALID_SOCKET;
 
 	// address info for the server to listen to
     struct addrinfo *result = NULL;
@@ -48,6 +50,13 @@ ServerNetwork::ServerNetwork(void)
         WSACleanup();
         exit(1);
     }
+
+	MaxSocketBufferSize = 8 * 65535;
+	if( setsockopt(ListenSocket, SOL_SOCKET, SO_SNDBUF, (char*)&MaxSocketBufferSize, sizeof(MaxSocketBufferSize) ) == -1 ) 
+		printf( "Error setting socket opts: %s\n", WSAGetLastError() );
+
+	int optlen = sizeof(MaxSocketBufferSize);
+	iResult = getsockopt(ListenSocket, SOL_SOCKET, SO_SNDBUF, (char*)&MaxSocketBufferSize, &optlen );
 
     // Set the mode of the socket to be nonblocking
 /*    u_long iMode = 1;
@@ -93,6 +102,11 @@ ServerNetwork::~ServerNetwork(void)
 	closesocket( ListenSocket );
     if (iResult == SOCKET_ERROR) 
         printf("closesocket function failed with error %d\n", WSAGetLastError());
+
+	std::map<unsigned int, SOCKET>::iterator iter;
+    for (iter = sessions.begin(); iter != sessions.end(); iter++)
+        closesocket( iter->second );
+	sessions.clear();
 }
 
 // accept new connections
@@ -100,13 +114,13 @@ static int ClientNr = 0;
 bool ServerNetwork::acceptNewClient()
 {
     // if client waiting, accept the connection and save the socket
-    ClientSocket = accept(ListenSocket,NULL,NULL);
+    SOCKET ClientSocket = accept( ListenSocket, NULL, NULL );
 
     if (ClientSocket != INVALID_SOCKET) 
     {
         //disable nagle on the client's socket
-        char value = 1;
-        setsockopt( ClientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
+//        char value = 1;
+//        setsockopt( ClientSocket, IPPROTO_TCP, TCP_NODELAY, &value, sizeof( value ) );
 
         // insert new client into session id table
 		sessions.insert( std::pair<unsigned int, SOCKET>( ClientNr, ClientSocket) );
@@ -114,6 +128,9 @@ bool ServerNetwork::acceptNewClient()
 
         return true;
     }
+
+	//we only accept 1 client ?
+	closesocket( ListenSocket );
 
     return false;
 }
@@ -129,6 +146,9 @@ void ServerNetwork::sendToAll(char *packets, int totalSize)
     {
         currentSocket = iter->second;
         iSendResult = send( currentSocket, packets, totalSize, 0 );
+
+//		for( int i = 0; i < 60; i++ )
+//			printf( "0x%02X ", (unsigned char)( packets[i] ) );
 
         if (iSendResult == SOCKET_ERROR) 
         {

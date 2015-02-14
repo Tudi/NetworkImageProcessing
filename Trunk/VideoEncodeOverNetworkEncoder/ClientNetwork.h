@@ -16,6 +16,7 @@ struct NetworkPacketHeader
 	int Width,Stride,Height,PixelByteCount;
 	int CompressionStrength;
 	int CompressedSize;
+	int	PacketSize;
 };
 #pragma pack(pop)
 
@@ -35,5 +36,7 @@ public:
     ~ClientNetwork(void);
 
 	int receivePackets(char *);
+
+	int MaxSocketBufferSize;
 };
 
