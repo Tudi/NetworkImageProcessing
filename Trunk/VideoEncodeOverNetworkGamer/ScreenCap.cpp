@@ -186,7 +186,7 @@ void CScreenImage::WriteOurBitmapToDC( int Upscale, int ShiftX, int ShiftY, CIma
 	}
 }
 
-void CScreenImage::Resample( MEImageDescRGB32 &NewSize )
+void CScreenImage::Resample( MEImageDescRGB32 &NewSize, int Masked )
 {
 	if( ResampleBuff != NULL && ResampledImageHeight * ResampledImageStride < ( (int)NewSize.EndY - (int)NewSize.StartY ) * (int)NewSize.Stride )
 	{
@@ -205,7 +205,12 @@ void CScreenImage::Resample( MEImageDescRGB32 &NewSize )
 	if( ResampledImagePixelByteCount == 4 )
 		ResampleRGBLiniar4ByteDownsample( (unsigned char*)ActiveRGB4ByteImageBuff, (unsigned char*)ResampleBuff, ActiveImageWidth, ActiveImageHeight, ResampledImageWidth, ResampledImageHeight, ActiveImageStride, ResampledImageStride );
 	else if( ResampledImagePixelByteCount == 3 )
-		ResampleRGBLiniar4to3ByteDownsample( (unsigned char*)ActiveRGB4ByteImageBuff, (unsigned char*)ResampleBuff, ActiveImageWidth, ActiveImageHeight, ResampledImageWidth, ResampledImageHeight, ActiveImageStride, ResampledImageStride );
+	{
+		if( Masked )
+			ResampleRGBLiniar4to5BitsDownsample( (unsigned char*)ActiveRGB4ByteImageBuff, (unsigned char*)ResampleBuff, ActiveImageWidth, ActiveImageHeight, ResampledImageWidth, ResampledImageHeight, ActiveImageStride, ResampledImageStride );
+		else
+			ResampleRGBLiniar4to3ByteDownsample( (unsigned char*)ActiveRGB4ByteImageBuff, (unsigned char*)ResampleBuff, ActiveImageWidth, ActiveImageHeight, ResampledImageWidth, ResampledImageHeight, ActiveImageStride, ResampledImageStride );
+	}
 
 	ActiveRGB4ByteImageBuff = ResampleBuff;
 	ActiveImageWidth = ResampledImageWidth;

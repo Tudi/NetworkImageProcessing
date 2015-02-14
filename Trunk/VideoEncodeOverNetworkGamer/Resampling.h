@@ -8,6 +8,7 @@
 
 void ResampleRGBLiniar4ByteDownsample( unsigned char *psrc, unsigned char *pdst, unsigned int SrcW, unsigned int SrcH, unsigned int DestW, unsigned int DestH, unsigned int SrcStride = 0, unsigned int DestStride = 0 );
 void ResampleRGBLiniar4to3ByteDownsample( unsigned char *psrc, unsigned char *pdst, unsigned int SrcW, unsigned int SrcH, unsigned int DestW, unsigned int DestH, unsigned int SrcStride = 0, unsigned int DestStride = 0 );
+void ResampleRGBLiniar4to5BitsDownsample( unsigned char *psrc, unsigned char *pdst, unsigned int SrcW, unsigned int SrcH, unsigned int DestW, unsigned int DestH, unsigned int SrcStride = 0, unsigned int DestStride = 0 );
 
 #endif
 

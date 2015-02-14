@@ -25,6 +25,8 @@ void ConvertLineToParam( char *Line )
 			GlobalData.FPSLimit = atoi( StrValue );
 		else if( strstr( Line, "MaxNetworkPacketSize" ) )
 			GlobalData.MaxPacketSize = atoi( StrValue );
+		else if( strstr( Line, "ShowStatistics" ) )
+			GlobalData.ShowStatistics = atoi( StrValue );
 	}
 }
 

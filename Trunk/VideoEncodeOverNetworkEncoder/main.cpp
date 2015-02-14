@@ -113,7 +113,7 @@ void ListenAndPaint( void *arg )
 
 	//start the neverending loop
 	StartTimer();
-	unsigned int LoopCounter = 0;
+	unsigned int LoopCounter = 1;
 	unsigned int FPSSum = 0;
 
 	GlobalData.ThreadIsRunning = 1;
@@ -134,16 +134,27 @@ void ListenAndPaint( void *arg )
 		if( RecvCount < 0 )
 			break;
 
-		if( GlobalData.ShowStatistics == 2 )
-		{
-			EndCapture = GetTimer();
-			printf( "Statistics : Time required for capture : %d. Estimated FPS %d\n", EndCapture - End, 1000 / ( EndCapture - End + 1) );
-			End = EndCapture;
-		}
-
 		ph = (NetworkPacketHeader *)ZlibInputBuffer;
 		if( RecvCount != ph->PacketSize )
 			printf( "%d Did not read all data from network %d received instead %d - %d\n", LoopCounter, RecvCount, ph->PacketSize, ph->CompressedSize + sizeof( NetworkPacketHeader ) );
+
+		if( GlobalData.ShowStatistics == 2 )
+		{
+			EndCapture = GetTimer();
+			printf( "Statistics : Time required for capture recv : %d. Estimated FPS %d\n", EndCapture - End, 1000 / ( EndCapture - End + 1) );
+			End = EndCapture;
+		}
+
+		int ReplyBuffer[1];
+		ReplyBuffer[0] = 1000 / ( FPSSum / LoopCounter + 1);
+		NetworkListener.ReplyToSender( (char*)ReplyBuffer, sizeof( ReplyBuffer ) );
+
+		if( GlobalData.ShowStatistics == 2 )
+		{
+			EndCapture = GetTimer();
+			printf( "Statistics : Time required for capture send: %d. Estimated FPS %d\n", EndCapture - End, 1000 / ( EndCapture - End + 1) );
+			End = EndCapture;
+		}
 
 		//is it compressed ?
 		if( ph->CompressionStrength > Z_NO_COMPRESSION )
@@ -171,7 +182,7 @@ void ListenAndPaint( void *arg )
 		}
 
 		//resize window that we will paint to our destination size
-		if( LoopCounter == 0 )
+		if( LoopCounter == 1 )
 		{
 			printf("Got first network packet\n");
 			printf("width %d\n",ph->Width);
@@ -198,7 +209,7 @@ void ListenAndPaint( void *arg )
 		FPSSum += EndLoop - Start;
 		if( ( GlobalData.ShowStatistics == 1 && LoopCounter % 5 == 0 ) || GlobalData.ShowStatistics > 1 )
 		{
-			printf( "Statistics : Time required overall : %d. Avg FPS %d\n\n", EndLoop - Start, 1000 / ( FPSSum / ( LoopCounter + 1 ) ) );
+			printf( "Statistics : Time required overall : %d. Avg FPS %d\n\n", EndLoop - Start, 1000 / ( FPSSum / LoopCounter ) );
 			End = EndLoop;
 		}
 

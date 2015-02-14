@@ -36,6 +36,7 @@ public:
     ~ClientNetwork(void);
 
 	int receivePackets(char *);
+	int ReplyToSender(char *, int);
 
 	int MaxSocketBufferSize;
 };

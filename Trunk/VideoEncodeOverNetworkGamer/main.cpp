@@ -80,8 +80,9 @@ void ScreenCaptureAndSendThread( void *arg )
 
 	//start the neverending loop
 	StartTimer();
-	unsigned int LoopCounter = 0;
+	unsigned int LoopCounter = 1;
 	unsigned int FPSSum = 0;
+	unsigned int PacketSizeSum = 0;
 
 	printf("Waiting for client connection\n");
 	NetworkListener.acceptNewClient();
@@ -95,7 +96,7 @@ void ScreenCaptureAndSendThread( void *arg )
 
 		if( GlobalData.ShowStatistics == 2 )
 		{
-			system("cls");
+//			system("cls");
 		}
 
 		printf("press 'e' to shut down properly\n" );
@@ -117,7 +118,7 @@ void ScreenCaptureAndSendThread( void *arg )
 		}
 		if( GlobalData.ResizeWidth != -1 )
 		{
-			GlobalData.CapturedScreen->Resample( NewSize );
+			GlobalData.CapturedScreen->Resample( NewSize, GlobalData.CompressionStrength >= 3 );
 			if( GlobalData.ShowStatistics == 2 )
 			{
 				EndResize = GetTimer();
@@ -162,7 +163,11 @@ void ScreenCaptureAndSendThread( void *arg )
 //		NetworkListener.acceptNewClient();
 
 		if( NetworkListener.HasConnections() == 0 )
+		{
 			printf( "Network : Waiting for clients to connect\n" );
+			NetworkListener.acceptNewClient();
+//			break;
+		}
 		else
 		{
 			NetworkPacketHeader *ph = (NetworkPacketHeader *)ZlibOutputBuffer;
@@ -186,10 +191,12 @@ void ScreenCaptureAndSendThread( void *arg )
 				ph->PacketSize = ph->CompressedSize + sizeof( NetworkPacketHeader );
 				NetworkListener.sendToAll( (char*)ZlibOutputBuffer, ph->CompressedSize + sizeof( NetworkPacketHeader ) );
 			}
+			PacketSizeSum += ph->PacketSize;
 			if( GlobalData.ShowStatistics == 2 )
 			{
 				EndNetwork = GetTimer();
 				printf( "Statistics : Time required for network send : %d. Estimated FPS %d\n", EndNetwork - End, 1000 / ( EndNetwork - End + 1) );
+				printf( "Statistics : Avg packet size %d\n", PacketSizeSum / LoopCounter );
 				End = EndNetwork;
 			}
 		}
@@ -198,7 +205,7 @@ void ScreenCaptureAndSendThread( void *arg )
 		FPSSum += EndLoop - Start;
 		if( ( GlobalData.ShowStatistics == 1 && LoopCounter % 5 == 0 ) || GlobalData.ShowStatistics > 1 )
 		{
-			printf( "Statistics : Time required overall : %d. Avg FPS %d\n\n", EndLoop - Start, 1000 / ( FPSSum / ( LoopCounter + 1 ) ) );
+			printf( "Statistics : Time required overall : %d. Avg FPS %d\n\n", EndLoop - Start, 1000 / ( FPSSum / LoopCounter ) );
 			End = EndLoop;
 		}
 

@@ -51,7 +51,7 @@ ServerNetwork::ServerNetwork(void)
         exit(1);
     }
 
-	MaxSocketBufferSize = 8 * 65535;
+	MaxSocketBufferSize = 1 * 65535;
 	if( setsockopt(ListenSocket, SOL_SOCKET, SO_SNDBUF, (char*)&MaxSocketBufferSize, sizeof(MaxSocketBufferSize) ) == -1 ) 
 		printf( "Error setting socket opts: %s\n", WSAGetLastError() );
 
@@ -154,7 +154,15 @@ void ServerNetwork::sendToAll(char *packets, int totalSize)
         {
 			printf("Client %d. Send failed with error: %d\n", iter->first, WSAGetLastError() );
             closesocket( currentSocket );
+			iter->second = 0;
+			// !!! presuming there is only 1 client !!
+			sessions.erase( iter ); 
+			return;
         }
+		int ReplyFromClient[4];
+        iSendResult = recv( currentSocket, (char*)ReplyFromClient, sizeof( ReplyFromClient ), 0 );
+		if( GlobalData.ShowStatistics == 2 )
+			printf( "Statistics : Encoder avg render speed %d\n", ReplyFromClient[0] );
     }
 }
 

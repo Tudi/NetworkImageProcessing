@@ -54,7 +54,7 @@ ClientNetwork::ClientNetwork(void)
             exit(1);
         }
 
-		MaxSocketBufferSize = 8 * 65535;
+		MaxSocketBufferSize = 16 * 65535;
 		if( setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, (char*)&MaxSocketBufferSize, sizeof(MaxSocketBufferSize) ) == -1 ) 
 			printf( "Error setting socket opts: %s\n", WSAGetLastError() );
 
@@ -140,4 +140,16 @@ int ClientNetwork::receivePackets(char *recvbuf)
 	}
 
     return iResult;
+}
+
+int ClientNetwork::ReplyToSender( char *packets, int totalSize )
+{
+    int iSendResult = send( ConnectSocket, packets, totalSize, 0 );
+
+    if (iSendResult == SOCKET_ERROR) 
+    {
+		printf("Send failed with error: %d\n", WSAGetLastError() );
+        closesocket( ConnectSocket );
+    }
+	return iSendResult;
 }

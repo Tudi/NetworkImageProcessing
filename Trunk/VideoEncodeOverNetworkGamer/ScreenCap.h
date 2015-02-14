@@ -59,7 +59,7 @@ public:
 	unsigned char	*ActiveRGB4ByteImageBuff;	//in case we resize / process the buffer / change location than update this pointer to point to that location
 	int				ActiveImageWidth,ActiveImageStride,ActiveImageHeight,ActiveImagePixelByteCount;
 
-	void			Resample( MEImageDescRGB32 &NewSize );
+	void			Resample( MEImageDescRGB32 &NewSize, int Masked = 0 );
 	unsigned char	*ResampleBuff;
 	int				ResampledImageWidth,ResampledImageStride,ResampledImageHeight,ResampledImagePixelByteCount;
 
