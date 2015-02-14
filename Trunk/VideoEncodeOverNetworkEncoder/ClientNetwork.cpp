@@ -61,6 +61,12 @@ ClientNetwork::ClientNetwork(void)
 		int optlen = sizeof(MaxSocketBufferSize);
 		iResult = getsockopt(ConnectSocket, SOL_SOCKET, SO_RCVBUF, (char*)&MaxSocketBufferSize, &optlen );
 
+//		timeval tv;
+//		tv.tv_sec = 10; 
+//		setsockopt(ConnectSocket, SOL_SOCKET, SO_RCVTIMEO,(const char *)&tv,sizeof(tv));
+//		tv.tv_sec = 10; 
+//		setsockopt(ConnectSocket, SOL_SOCKET, SO_SNDTIMEO,(const char *)&tv,sizeof(tv));
+
         // Connect to server.
         iResult = connect( ConnectSocket, ptr->ai_addr, (int)ptr->ai_addrlen);
 

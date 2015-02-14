@@ -58,6 +58,12 @@ ServerNetwork::ServerNetwork(void)
 	int optlen = sizeof(MaxSocketBufferSize);
 	iResult = getsockopt(ListenSocket, SOL_SOCKET, SO_SNDBUF, (char*)&MaxSocketBufferSize, &optlen );
 
+//	timeval tv;
+//	tv.tv_sec = 1; 
+//	setsockopt(ListenSocket, SOL_SOCKET, SO_RCVTIMEO,(const char *)&tv,sizeof(tv));
+//	tv.tv_sec = 10; 
+//	setsockopt(ListenSocket, SOL_SOCKET, SO_SNDTIMEO,(const char *)&tv,sizeof(tv));
+
     // Set the mode of the socket to be nonblocking
 /*    u_long iMode = 1;
     iResult = ioctlsocket(ListenSocket, FIONBIO, &iMode);

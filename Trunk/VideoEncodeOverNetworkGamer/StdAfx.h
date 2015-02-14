@@ -13,29 +13,29 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>
-#include <tchar.h>
+//#include <tchar.h>
 
 
 // TODO: reference additional headers your program requires here
 #include <windows.h>
 #include <stdio.h>
-#include <fcntl.h>
-#include <io.h>
-#include <iostream>
-#include <fstream>
+//#include <fcntl.h>
+//#include <io.h>
+//#include <iostream>
+//#include <fstream>
 #include <string.h>
 #include <assert.h>
-#include <tmmintrin.h>
+//#include <tmmintrin.h>
 #include <conio.h>
-
 #include <atlimage.h>
 #include <assert.h>
+
 #include "ScreenCap.h"
 #include "Resampling.h"
 #include "IniReader.h"
 #include "Tools.h"
 #include "PreciseTimer.h"
-#include "ImageTools.h"
+//#include "ImageTools.h"
 #include "zlib.h"
 #include "ServerNetwork.h"
 
@@ -51,7 +51,7 @@ struct GlobalStore
 	int				ShowStatistics;
 	char			*EncoderIP;
 	char			*EncoderPort;
-	int				MaxPacketSize;
+//	int				MaxPacketSize;
 	int				ThreadIsRunning;
 };
 

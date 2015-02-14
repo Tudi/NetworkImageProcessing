@@ -31,12 +31,12 @@ void ConvertLineToParam( char *Line )
 			GlobalData.FPSLimit = atoi( StrValue );
 		else if( strstr( Line, "ShowStatistics" ) )
 			GlobalData.ShowStatistics = atoi( StrValue );
-		else if( strstr( Line, "EncoderIP" ) )
-			GlobalData.EncoderIP = _strdup( StrValue );
-		else if( strstr( Line, "EncoderPort" ) )
+//		else if( strstr( Line, "EncoderIP" ) )
+//			GlobalData.EncoderIP = _strdup( StrValue );
+		else if( strstr( Line, "ListenPort" ) )
 			GlobalData.EncoderPort = _strdup( StrValue );
-		else if( strstr( Line, "MaxNetworkPacketSize" ) )
-			GlobalData.MaxPacketSize = atoi( StrValue );
+//		else if( strstr( Line, "MaxNetworkPacketSize" ) )
+//			GlobalData.MaxPacketSize = atoi( StrValue );
 	}
 }
 

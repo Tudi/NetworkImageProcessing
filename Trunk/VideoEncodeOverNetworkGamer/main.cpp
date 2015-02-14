@@ -76,7 +76,7 @@ void ScreenCaptureAndSendThread( void *arg )
 	}
 	//this is also used for network buffer
 	ZlibOutputBuffer = (unsigned char*)malloc( SrcWidth * SrcHeight * RGB_BYTE_COUNT );
-	assert( SrcWidth * SrcHeight * RGB_BYTE_COUNT < GlobalData.MaxPacketSize );
+//	assert( SrcWidth * SrcHeight * RGB_BYTE_COUNT < GlobalData.MaxPacketSize );
 
 	//start the neverending loop
 	StartTimer();
@@ -165,8 +165,8 @@ void ScreenCaptureAndSendThread( void *arg )
 		if( NetworkListener.HasConnections() == 0 )
 		{
 			printf( "Network : Waiting for clients to connect\n" );
-			NetworkListener.acceptNewClient();
-//			break;
+//			NetworkListener.acceptNewClient();
+			break;
 		}
 		else
 		{

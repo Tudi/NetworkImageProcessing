@@ -127,9 +127,9 @@ void ListenAndPaint( void *arg )
 		//wait until we have new data on network
 		Sleep( 1000 );
 		int RecvCount;
-		do {
+//		do {
 			RecvCount = NetworkListener.receivePackets( (char*)ZlibInputBuffer );
-		}while( RecvCount == 0 );
+//		}while( RecvCount == 0 );
 
 		if( RecvCount < 0 )
 			break;
