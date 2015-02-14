@@ -1,0 +1,13 @@
+@ Avoid making your CPU smoke. Allow your CPU to idle( if he can )
+FPSLimit=20
+
+@ The IP of the PC you will use to encode
+CapturePCIP=192.168.1.2
+CapturePCPort=6888
+MaxNetworkPacketSize=14440000
+
+@ Show statistics about what goes on inside the program. As funny this sounds, this does eat up CPU :P
+@ 0 - none
+@ 1 - show fps only
+@ 2 - show all
+ShowStatistics=0

@@ -161,7 +161,7 @@ int ClientNetwork::ReceivePacketNonBlocking( char *recvbuf )
 	int RequiredRead = 0;
 	do{
 TRY_MORE_READ_ON_LACK_OF_DATA:
-		unsigned int Start = GetTimer();
+//		unsigned int Start = GetTimer();
 		if( WriteIndex == 0 )
 			iResult = recv( ConnectSocket, &recvbuf[WriteIndex], sizeof( NetworkPacketHeader ), 0 );
 		else
@@ -198,8 +198,8 @@ TRY_MORE_READ_ON_LACK_OF_DATA:
 		}
 		WriteIndex += iResult;
 		SumRead += iResult;
-		unsigned int End = GetTimer();
-		printf("network packet fragment size %d, received in %d seconds\n", iResult, End - Start );
+//		unsigned int End = GetTimer();
+//		printf("network packet fragment size %d, received in %d seconds\n", iResult, End - Start );
 	}while( SumRead < RequiredRead && WriteIndex < GlobalData.MaxPacketSize );
     return SumRead;
 }
