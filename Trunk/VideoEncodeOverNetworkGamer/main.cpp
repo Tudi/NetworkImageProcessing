@@ -40,7 +40,7 @@ void ScreenCaptureAndSendThread( void *arg )
 		SrcWidth = rect.right - rect.left;
 		SrcHeight = rect.bottom - rect.top;
 	}
-	else
+	if( GlobalData.WndSrc == NULL )
 	{
 		GlobalData.WndSrc = NULL;
 		GetDesktopResolution( SrcWidth, SrcHeight );
@@ -121,6 +121,13 @@ void ScreenCaptureAndSendThread( void *arg )
 			printf( "Statistics : Time required for capture : %d. Estimated FPS %d\n", EndCapture - End, 1000 / ( EndCapture - End + 1) );
 			End = EndCapture;
 		}
+
+		if( GlobalData.CapturedScreen->ActiveRGB4ByteImageBuff == NULL )
+		{
+			printf( "Error - Image Aquire : Could not capture screen\n" );
+			break;
+		}
+
 		if( NewSize.EndX != 0 )
 		{
 			GlobalData.CapturedScreen->Resample( NewSize );
@@ -226,6 +233,7 @@ void ScreenCaptureAndSendThread( void *arg )
 	WSACleanup();
 
 	GlobalData.ThreadIsRunning = 0;
+	printf("Press 'e' to exit in a clean manner\n");
 }
 
 void main()

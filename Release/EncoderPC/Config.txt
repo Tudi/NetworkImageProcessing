@@ -2,6 +2,6 @@
 FPSLimit=20
 
 @ The IP of the PC you will use to play the game
-CapturePCIP=192.168.1.2
+CapturePCIP=127.0.0.1
 CapturePCPort=6888
 MaxNetworkPacketSize=14440000
