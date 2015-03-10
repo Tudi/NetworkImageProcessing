@@ -2,6 +2,16 @@
 
 //#define USE_SETPIXEL_INSTEAD_BLT 
 
+int IsPerfectFitWindow( int ExpectedWidth, int ExpectedHeight )
+{
+	//get border size for this window
+	CRect rect;
+	::GetClientRect( GlobalData.WndSrc, rect );
+	if( ( rect.right - rect.left ) == ExpectedWidth && ( rect.bottom - rect.top ) == ExpectedHeight )
+		return 1;
+	return 0;
+}
+
 void PaintToWindow( NetworkPacketHeader *ph, unsigned char *Pixels )
 {
 	BITMAPINFO bmi;
@@ -40,9 +50,18 @@ void PaintToWindow( NetworkPacketHeader *ph, unsigned char *Pixels )
 		}
 	}
 //	SetDIBits( NULL, hDib, 0, bmi.biHeight, Pixels, &bmi, DIB_RGB_COLORS);
-//	int res = StretchBlt( hDC, 0, 0, ph->Width, ph->Height, hDibDC, 0, 0, ph->Width, ph->Height, SRCCOPY );
 #ifndef USE_SETPIXEL_INSTEAD_BLT
-	int res = BitBlt( hDC, 0, 0, ph->Width, ph->Height, hDibDC, 0, 0, SRCCOPY );
+	int res;
+	if( IsPerfectFitWindow( ph->Width, ph->Height ) )
+		res = BitBlt( hDC, 0, 0, ph->Width, ph->Height, hDibDC, 0, 0, SRCCOPY );
+	else
+	{
+		CRect rect;
+		::GetClientRect( GlobalData.WndSrc, rect );
+		int Width = rect.right - rect.left;
+		int Height = rect.bottom - rect.top;
+		res = StretchBlt( hDC, 0, 0, Width, Height, hDibDC, 0, 0, ph->Width, ph->Height, SRCCOPY );
+	}
 #endif
 
 	DeleteObject( hOldObj );
