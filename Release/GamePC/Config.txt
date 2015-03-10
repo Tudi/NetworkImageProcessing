@@ -4,8 +4,9 @@ WindowName=
 
 @ In case your network traffic can not handle the data amount. Resize the image to exactly that you use when streaming
 @ In case you are streaming with 20 FPS, and your stream resolution is 720p, that is 1280*720*4*20 = 73728000 bytes per second that needs to be transferred to the secondary PC ( 73 MB / sec is a lot ! )
-@ If you do not wish to resize the captured image that leave this to -1
+@ If you do not wish to resize the captured image than leave set ResizeToWidth to -1
 @ If you resize, i advise you to maintain aspect ratio to not make the screen look silly
+@ With every resize there will be information loss. Keep this in mind if you resize multiple times( resize, blurr, edge enhance...). The image will be worse every time
 ResizeToWidth=640
 ResizeToHeight=480
 
@@ -17,6 +18,7 @@ ResizeToHeight=480
 ResizeMethod=1
 
 @ Reduce Color depth. Reduces network traffic amount. In some cases it might not be encoder friendly. 
+@ if size does not matter for you, than do not reduce color depth
 @ 1 - no reduction
 @ 2 - 7 bits per plane
 @ 3 - 6 bits per plane
@@ -36,7 +38,7 @@ FPSLimit=20
 @ 0 - none
 @ 1 - show fps only
 @ 2 - show all
-ShowStatistics=2
+ShowStatistics=1
 
 @ The IP of the PC you will use to encode
 ListenPort=6888
