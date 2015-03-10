@@ -200,7 +200,14 @@ void ListenAndPaint( void *arg )
 			printf("CompressionStrength %d\n",ph->CompressionStrength);
 			printf("CompressedSize %d\n",ph->CompressedSize);
 			printf("UnCompressedSize %d\n", zlib_stream.total_out );
-			SetWindowPos( GlobalData.WndSrc, 0, 0, 0, ph->Width, ph->Height, SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE );
+			//get border size for this window
+			CRect rect,rect2;
+			::GetWindowRect( GlobalData.WndSrc, rect );
+			::GetClientRect( GlobalData.WndSrc, rect2 );
+			int BorderWidth = ( rect.right - rect.left ) - rect2.right;
+			int BorderHeight = ( rect.bottom - rect.top ) - rect2.bottom;
+
+			SetWindowPos( GlobalData.WndSrc, 0, 0, 0, ph->Width + BorderWidth, ph->Height + BorderHeight, SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE );
 		}
 		else if( ph->Version == 1 && ph->Width < 2000 && ph->Height < 2000 )
 		{

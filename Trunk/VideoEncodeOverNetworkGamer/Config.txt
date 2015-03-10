@@ -1,5 +1,5 @@
 @ Target window name you wish to capture. Leave it to empty if you wish to capture your whole screen
-WindowName=
+WindowName=calc
 
 @ In case your network traffic can not handle the data amount. Resize the image to exactly that you use when streaming
 @ In case you are streaming with 20 FPS, and your stream resolution is 720p, that is 1280*720*4*20 = 73728000 bytes per second that needs to be transferred to the secondary PC ( 73 MB / sec is a lot ! )
@@ -9,6 +9,7 @@ ResizeToWidth=640
 ResizeToHeight=480
 
 @ Resize algorithm
+@ Note : ! Right now only method 1 is implemented ! Others will follow on request
 @ 1 - Direct Resize. The least CPU usage. It is not encoder friendly !
 @ 2 - 2x tap filtering. Moderate CPU usage. Encoder Friendly
 @ 3 - 3x tap filtering. High CPU usage. Encoder friendly

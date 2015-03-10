@@ -112,7 +112,6 @@ void ResampleRGBLiniar4to5BitsDownsample( unsigned char *psrc, unsigned char *pd
 	assert( ( ( ( int_conv_y * DestH ) >> FLOAT_PRECISSION_BITS ) ) <= SrcH );
 	assert( ( ( ( int_conv_x * DestW ) >> FLOAT_PRECISSION_BITS ) ) <= SrcW );
 	assert( ( ( ( int_conv_y * DestH ) >> FLOAT_PRECISSION_BITS ) * ( (int_conv_x * DestW ) >> FLOAT_PRECISSION_BITS ) * 3 / 2 ) <= SrcW * SrcH * 3 / 2 );
-	assert( DestH <= SrcH );
 #endif
 	if( SrcStride == 0 )
 		SrcStride = SrcW;

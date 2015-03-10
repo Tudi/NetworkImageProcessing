@@ -33,6 +33,20 @@ struct SearchCallbackIOStruct
 	bool SearchDone;
 };
 
+
+//non optimized bad version of strstr case insensitive. Remind me to rewrite this
+char *stristr( char *SearchIn, char *SearchWhat )
+{
+	for( int a=0;SearchIn[a]!=0 && a < 10000;a++)
+	{
+		int b;
+		for( b=0;SearchWhat[b]!=0 && SearchIn[a+b]!=0 && tolower( SearchWhat[b] ) == tolower( SearchIn[a+b] ) && b < 10000; b++ );
+		if( SearchWhat[b] == 0 )
+			return &SearchIn[a];
+	}
+	return NULL;
+}
+
 BOOL CALLBACK EnumWindowsProcFindWndByName( HWND hwnd, LPARAM lParam )
 {
 	char WindowTitle[ DEFAULT_BUFLEN ];
@@ -43,7 +57,8 @@ BOOL CALLBACK EnumWindowsProcFindWndByName( HWND hwnd, LPARAM lParam )
 
 	GetWindowText( hwnd, WindowTitle, sizeof( WindowTitle ) );
 
-	if( strstr( WindowTitle, pIO->SearchName ) != NULL )
+//	if( strstr( WindowTitle, pIO->SearchName ) != NULL )
+	if( stristr( WindowTitle, pIO->SearchName ) != NULL )
 	{
 		pIO->ret = hwnd;
 		pIO->SearchDone = true;

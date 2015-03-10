@@ -1,4 +1,5 @@
 @ Target window name you wish to capture. Leave it to empty if you wish to capture your whole screen
+@ Expected name it not case sensitive and can be only a part of the full name. Ex : "craft" instead "Minecraft"
 WindowName=
 
 @ In case your network traffic can not handle the data amount. Resize the image to exactly that you use when streaming
@@ -9,6 +10,7 @@ ResizeToWidth=640
 ResizeToHeight=480
 
 @ Resize algorithm
+@ Note : ! Right now only method 1 is implemented !
 @ 1 - Direct Resize. The least CPU usage. It is not encoder friendly !
 @ 2 - 2x tap filtering. Moderate CPU usage. Encoder Friendly
 @ 3 - 3x tap filtering. High CPU usage. Encoder friendly

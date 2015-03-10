@@ -17,7 +17,7 @@ void CaptureScreen()
 	if( GlobalData.WndSrc == NULL )
 		GlobalData.CapturedScreen->CaptureScreenConvert();
 	else
-		GlobalData.CapturedScreen->CaptureWindow( GlobalData.WndSrc );
+		GlobalData.CapturedScreen->CaptureWindowConvert( GlobalData.WndSrc );
 }
 
 void ScreenCaptureAndSendThread( void *arg )
@@ -30,8 +30,6 @@ void ScreenCaptureAndSendThread( void *arg )
 	zlib_stream.opaque = Z_NULL;
 	unsigned char		*ZlibOutputBuffer = NULL;
 
-	ServerNetwork NetworkListener;
-
 	//do we have a source window or a desktop ?
 	int SrcWidth, SrcHeight;
 	if( GlobalData.WindowName[0] != 0 )
@@ -39,8 +37,8 @@ void ScreenCaptureAndSendThread( void *arg )
 		GlobalData.WndSrc = FindWindowWithNameNonThreaded( GlobalData.WindowName );
 		CRect rect;
 		::GetWindowRect( GlobalData.WndSrc, rect );
-		SrcWidth = rect.right;
-		SrcHeight = rect.bottom;
+		SrcWidth = rect.right - rect.left;
+		SrcHeight = rect.bottom - rect.top;
 	}
 	else
 	{
@@ -50,7 +48,10 @@ void ScreenCaptureAndSendThread( void *arg )
 
 	//check if user messed up aspect ratio
 	MEImageDescRGB32 NewSize;
-	if( GlobalData.ResizeWidth > 0 )
+	NewSize.EndX = 0;
+	if( GlobalData.ResizeWidth > 0 && GlobalData.ResizeHeight > 0 
+//		&& GlobalData.ResizeWidth < SrcWidth && GlobalData.ResizeHeight < SrcHeight		//need to implement upsampling
+		)
 	{
 		float SrcAspectRatio = (float)SrcWidth / (float)SrcHeight;
 		float DstAspectRatio = (float)GlobalData.ResizeWidth / (float)GlobalData.ResizeHeight;
@@ -74,6 +75,10 @@ void ScreenCaptureAndSendThread( void *arg )
 		if( deflateInit( &zlib_stream, GlobalData.CompressionStrength ) != Z_OK )
 			assert( false );
 	}
+
+	//only init network if other inits were fine. This is to avoid blocking ports on some error
+	ServerNetwork NetworkListener;
+
 	//this is also used for network buffer
 	ZlibOutputBuffer = (unsigned char*)malloc( SrcWidth * SrcHeight * RGB_BYTE_COUNT );
 //	assert( SrcWidth * SrcHeight * RGB_BYTE_COUNT < GlobalData.MaxPacketSize );
@@ -116,7 +121,7 @@ void ScreenCaptureAndSendThread( void *arg )
 			printf( "Statistics : Time required for capture : %d. Estimated FPS %d\n", EndCapture - End, 1000 / ( EndCapture - End + 1) );
 			End = EndCapture;
 		}
-		if( GlobalData.ResizeWidth != -1 )
+		if( NewSize.EndX != 0 )
 		{
 			GlobalData.CapturedScreen->Resample( NewSize );
 			if( GlobalData.ShowStatistics == 2 )
