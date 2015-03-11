@@ -35,17 +35,41 @@ void PaintToWindow( NetworkPacketHeader *ph, unsigned char *Pixels )
 
 	int DstStride = ((bmi.bmiHeader.biWidth * bmi.bmiHeader.biBitCount + 31) / 32) * bmi.bmiHeader.biBitCount / 8;
 	int SrcStride = ph->Stride;
-	for( int y = 0; y < ph->Height; y++ )
+	if( DstStride == SrcStride )
 	{
-		unsigned char *src = Pixels + SrcStride * y ;
-		unsigned int *dst = (unsigned int *)( buffer + DstStride * y );
-		for( int x = 0; x < ph->Width; x++ )
+		memcpy( buffer, Pixels, SrcStride * ph->Height );
+	}
+	else if( ph->PixelByteCount == 3 )
+	{
+		for( int y = 0; y < ph->Height; y++ )
 		{
+			unsigned char *src = Pixels + SrcStride * y ;
+			unsigned int *dst = (unsigned int *)( buffer + DstStride * y );
+			for( int x = 0; x < ph->Width; x++ )
+			{
 #ifdef USE_SETPIXEL_INSTEAD_BLT
-			COLORREF crColor = *(unsigned int*)&src[ x * 3 ] & 0x00FFFFFF;
-			SetPixel( hDC, x, y, crColor);
+				COLORREF crColor = *(unsigned int*)&src[ x * 3 ] & 0x00FFFFFF;
+				SetPixel( hDC, x, y, crColor);
 #else
-			dst[ x ] = *(unsigned int*)&src[ x * 3 ] & 0x00FFFFFF;
+				dst[ x ] = *(unsigned int*)&src[ x * 3 ] & 0x00FFFFFF;
+#endif
+			}
+		}
+	}
+	else if( ph->PixelByteCount == 4 )
+	{
+		for( int y = 0; y < ph->Height; y++ )
+		{
+			unsigned char *src = Pixels + SrcStride * y ;
+			unsigned int *dst = (unsigned int *)( buffer + DstStride * y );
+#ifdef USE_SETPIXEL_INSTEAD_BLT
+			for( int x = 0; x < ph->Width; x++ )
+			{
+				COLORREF crColor = *(unsigned int*)&src[ x * 4 ];
+				SetPixel( hDC, x, y, crColor);
+			}
+#else
+			memcpy( dst, src, SrcStride );
 #endif
 		}
 	}
@@ -246,8 +270,9 @@ void ListenAndPaint( void *arg )
 			End = EndLoop;
 		}
 
-		if( 1000 / GlobalData.FPSLimit > (int)( EndLoop - Start ) )
-			Sleep( 1000 / GlobalData.FPSLimit - ( EndLoop - Start ) );
+		//if we are unable to receive all data sent by gamer, network will congest
+//		if( 1000 / GlobalData.FPSLimit > (int)( EndLoop - Start ) )
+//			Sleep( 1000 / GlobalData.FPSLimit - ( EndLoop - Start ) );
 
 		LoopCounter++;
 	}

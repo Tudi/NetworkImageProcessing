@@ -7,6 +7,7 @@ GlobalStore GlobalData;
 #endif
 
 //#pragma comment(lib, "zlib.lib")
+#define SHOW_STATS_EVERY_N_FRAMES	32
 
 void CaptureScreen()
 {
@@ -80,7 +81,13 @@ void ScreenCaptureAndSendThread( void *arg )
 	ServerNetwork NetworkListener;
 
 	//this is also used for network buffer
-	ZlibOutputBuffer = (unsigned char*)malloc( SrcWidth * SrcHeight * RGB_BYTE_COUNT );
+	unsigned int ZlibBufferSize;
+	if( GlobalData.ResizeWidth * GlobalData.ResizeHeight > SrcWidth * SrcHeight )
+		ZlibBufferSize = GlobalData.ResizeWidth * GlobalData.ResizeHeight;
+	else
+		ZlibBufferSize = SrcWidth * SrcHeight;
+	ZlibBufferSize = ZlibBufferSize * RGB_BYTE_COUNT + sizeof( NetworkPacketHeader ) + MEMORY_SAFEGUARD_INTRINSIC_IMPLEMENT;
+	ZlibOutputBuffer = (unsigned char*)malloc( ZlibBufferSize );
 //	assert( SrcWidth * SrcHeight * RGB_BYTE_COUNT < GlobalData.MaxPacketSize );
 
 	//start the neverending loop
@@ -88,6 +95,8 @@ void ScreenCaptureAndSendThread( void *arg )
 	unsigned int LoopCounter = 1;
 	unsigned int FPSSum = 0;
 	unsigned int PacketSizeSum = 0;
+	unsigned int StartLoopStamp = GetTickCount();
+	signed int SleepAdjustment = 0;
 
 	printf("Waiting for client connection\n");
 	NetworkListener.acceptNewClient();
@@ -104,7 +113,8 @@ void ScreenCaptureAndSendThread( void *arg )
 //			system("cls");
 		}
 
-		printf("press 'e' to shut down properly\n" );
+		if( ( GlobalData.ShowStatistics <= 1 && LoopCounter % SHOW_STATS_EVERY_N_FRAMES == 0 ) || GlobalData.ShowStatistics > 1 )
+			printf("press 'e' to shut down properly\n" );
 
 		if( GlobalData.ShowStatistics == 2 )
 		{
@@ -150,7 +160,7 @@ void ScreenCaptureAndSendThread( void *arg )
 
 			// set up zlib_stream pointers
 			zlib_stream.next_out  = (Bytef*)ZlibOutputBuffer + sizeof( NetworkPacketHeader );
-			zlib_stream.avail_out = SrcWidth * SrcHeight * RGB_BYTE_COUNT - sizeof( NetworkPacketHeader );
+			zlib_stream.avail_out = ZlibBufferSize - sizeof( NetworkPacketHeader );
 			zlib_stream.next_in   = (Bytef*)GlobalData.CapturedScreen->ActiveRGB4ByteImageBuff;
 			zlib_stream.avail_in  = GlobalData.CapturedScreen->GetRequiredByteCount();
 
@@ -215,14 +225,30 @@ void ScreenCaptureAndSendThread( void *arg )
 
 		EndLoop = GetTimer();
 		FPSSum += EndLoop - Start;
-		if( ( GlobalData.ShowStatistics == 1 && LoopCounter % 5 == 0 ) || GlobalData.ShowStatistics > 1 )
+		if( ( GlobalData.ShowStatistics == 1 && LoopCounter % SHOW_STATS_EVERY_N_FRAMES == 0 ) || GlobalData.ShowStatistics > 1 )
 		{
-			printf( "Statistics : Time required overall : %d. Avg FPS %d\n\n", EndLoop - Start, 1000 / ( FPSSum / LoopCounter ) );
+			unsigned int CurLoopStamp = GetTickCount();
+			printf( "Statistics : Time required overall : %d. AVG FPS %d. Could achieve FPS %d\n\n", EndLoop - Start, 1000 / ( ( CurLoopStamp - StartLoopStamp ) / LoopCounter ), 1000 / ( FPSSum / LoopCounter ) );
 			End = EndLoop;
 		}
 
 		if( 1000 / GlobalData.FPSLimit > (int)( EndLoop - Start ) )
-			Sleep( 1000 / GlobalData.FPSLimit - ( EndLoop - Start ) );
+		{
+			//in theory you can calculate how much you need to sleep. In practice real sleep should be smaller due to thread switch or other delays
+			unsigned int ShouldSleepMSTheoretical = 1000 / GlobalData.FPSLimit - ( EndLoop - Start );
+			unsigned int CurLoopStamp = GetTickCount();
+			unsigned int PracticalFPS = 1000 / ( ( CurLoopStamp - StartLoopStamp ) / LoopCounter );
+			if( PracticalFPS < GlobalData.FPSLimit )
+				SleepAdjustment = SleepAdjustment - 1;
+			else if( PracticalFPS > GlobalData.FPSLimit )
+				SleepAdjustment = SleepAdjustment + 1;
+			if( SleepAdjustment > 0 )
+				SleepAdjustment = 0;
+			if( -SleepAdjustment > ShouldSleepMSTheoretical )
+				SleepAdjustment = -ShouldSleepMSTheoretical;
+			if( ShouldSleepMSTheoretical + SleepAdjustment > 0 )
+				Sleep( ShouldSleepMSTheoretical + SleepAdjustment );
+		}
 
 		LoopCounter++;
 	}

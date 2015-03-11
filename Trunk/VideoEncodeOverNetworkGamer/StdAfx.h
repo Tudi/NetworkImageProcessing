@@ -58,5 +58,6 @@ struct GlobalStore
 
 extern GlobalStore GlobalData;
 
-#define DEFAULT_BUFLEN 200
-#define RGB_BYTE_COUNT 4	//not safe to macro this as default RGB byte count is actually 3 bytes
+#define DEFAULT_BUFLEN							200
+#define RGB_BYTE_COUNT							4	//not safe to macro this as default RGB byte count is actually 3 bytes
+#define MEMORY_SAFEGUARD_INTRINSIC_IMPLEMENT	128

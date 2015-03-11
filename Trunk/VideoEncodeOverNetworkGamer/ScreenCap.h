@@ -51,7 +51,7 @@ public:
     BOOL CaptureWindowConvert(HWND hWnd) throw();
 	void SetToColor( unsigned char R, unsigned char G, unsigned char B );
 	void WriteOurBitmapToDC( int Upscale = 1, int ShiftX = 0, int ShiftY = 0, CImage *DestImg = NULL );
-	unsigned int GetRequiredByteCount() { return ActiveImageHeight * ActiveImageStride * ActiveImagePixelByteCount; }
+	unsigned int GetRequiredByteCount() { return ActiveImageHeight * ActiveImageStride; }
 //junk
 	HANDLE	hDIB;
 	unsigned char	*lpbitmap;
