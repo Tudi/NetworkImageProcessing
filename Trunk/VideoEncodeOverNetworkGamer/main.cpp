@@ -101,6 +101,9 @@ void ScreenCaptureAndSendThread( void *arg )
 	printf("Waiting for client connection\n");
 	NetworkListener.acceptNewClient();
 
+	if( GlobalData.ShowStatistics == 0 )
+		printf("press 'e' to shut down properly\n" );
+
 	GlobalData.ThreadIsRunning = 1;
 	while( GlobalData.ThreadIsRunning == 1 )
 	{
@@ -113,7 +116,7 @@ void ScreenCaptureAndSendThread( void *arg )
 //			system("cls");
 		}
 
-		if( ( GlobalData.ShowStatistics <= 1 && LoopCounter % SHOW_STATS_EVERY_N_FRAMES == 0 ) || GlobalData.ShowStatistics > 1 )
+		if( ( GlobalData.ShowStatistics == 1 && LoopCounter % SHOW_STATS_EVERY_N_FRAMES == 0 ) || GlobalData.ShowStatistics > 1 )
 			printf("press 'e' to shut down properly\n" );
 
 		if( GlobalData.ShowStatistics == 2 )

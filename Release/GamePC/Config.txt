@@ -37,8 +37,8 @@ FPSLimit=20
 @ Show statistics about what goes on inside the program. As funny this sounds, this does eat up CPU :P
 @ 0 - none
 @ 1 - show fps only
-@ 2 - show all
-ShowStatistics=1
+@ 2 - show all timers
+ShowStatistics=0
 
 @ The IP of the PC you will use to encode
 ListenPort=6888
