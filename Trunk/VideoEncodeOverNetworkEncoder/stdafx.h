@@ -37,6 +37,7 @@ struct GlobalStore
 	int		MaxPacketSize;
 	int		ThreadIsRunning;
 	int		ShowStatistics;
+	int		UseCustomPicureSize,Width,Height;
 };
 
 extern GlobalStore GlobalData;

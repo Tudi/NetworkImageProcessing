@@ -164,6 +164,7 @@ void ListenAndPaint( void *arg )
 	unsigned int FPSSum = 0;
 
 	GlobalData.ThreadIsRunning = 1;
+	GlobalData.UseCustomPicureSize = 0;
 	while( GlobalData.ThreadIsRunning == 1 )
 	{
 		unsigned int Start = GetTimer();
@@ -231,6 +232,23 @@ void ListenAndPaint( void *arg )
 			End = EndCompress;
 		}
 
+		GlobalData.Width = ph->Width;
+		GlobalData.Height = ph->Height;
+		if( GlobalData.UseCustomPicureSize == 0 && GlobalData.Width != 0 )
+		{
+			//get border size for this window
+			CRect rect,rect2;
+			::GetClientRect( GlobalData.WndSrc, rect2 );
+			if( rect2.right != GlobalData.Width || rect2.bottom != GlobalData.Height )
+			{
+				::GetWindowRect( GlobalData.WndSrc, rect );
+				int BorderWidth = ( rect.right - rect.left ) - rect2.right;
+				int BorderHeight = ( rect.bottom - rect.top ) - rect2.bottom;
+
+				SetWindowPos( GlobalData.WndSrc, 0, 0, 0, ph->Width + BorderWidth, ph->Height + BorderHeight, SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE );
+			}
+		}
+
 		//resize window that we will paint to our destination size
 		if( LoopCounter == 1 )
 		{
@@ -243,14 +261,6 @@ void ListenAndPaint( void *arg )
 			printf("CompressionStrength %d\n",ph->CompressionStrength);
 			printf("CompressedSize %d\n",ph->CompressedSize);
 			printf("UnCompressedSize %d\n", zlib_stream.total_out );
-			//get border size for this window
-			CRect rect,rect2;
-			::GetWindowRect( GlobalData.WndSrc, rect );
-			::GetClientRect( GlobalData.WndSrc, rect2 );
-			int BorderWidth = ( rect.right - rect.left ) - rect2.right;
-			int BorderHeight = ( rect.bottom - rect.top ) - rect2.bottom;
-
-			SetWindowPos( GlobalData.WndSrc, 0, 0, 0, ph->Width + BorderWidth, ph->Height + BorderHeight, SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE );
 		}
 		else if( ph->Version == 1 && ph->Width < 2000 && ph->Height < 2000 )
 		{
@@ -282,6 +292,10 @@ void ListenAndPaint( void *arg )
 
 	NetworkListener.~ClientNetwork();
 
+	GlobalData.ThreadIsRunning = 2;
+
+	if( GlobalData.WndSrc != 0 )
+		DestroyWindow( GlobalData.WndSrc );
 	exit(0);
 }
 

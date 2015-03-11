@@ -145,6 +145,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
+	case WM_SIZE:
+			GlobalData.UseCustomPicureSize = 1;
+		break;
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam);
 		wmEvent = HIWORD(wParam);
@@ -155,8 +158,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_EXIT:
+		{
 			GlobalData.ThreadIsRunning = 0;
+			int AntiDeadlockTimer = 10;
+			while( GlobalData.ThreadIsRunning == 0 && AntiDeadlockTimer > 0 )
+			{
+				AntiDeadlockTimer--;
+				Sleep( 100 );
+			}
 			DestroyWindow(hWnd);
+		}break;
+		case ID_TOOLS_RESTORESIZE:
+			GlobalData.UseCustomPicureSize = 0;
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
