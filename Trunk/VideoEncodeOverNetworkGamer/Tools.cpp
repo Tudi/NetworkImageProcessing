@@ -55,6 +55,10 @@ BOOL CALLBACK EnumWindowsProcFindWndByName( HWND hwnd, LPARAM lParam )
 	if( pIO->SearchDone == true )
 		return FALSE;
 
+	//only search on main window names. If you need window in window search than enable this
+	if( GetParent( hwnd ) != 0 )
+		return FALSE;
+
 	GetWindowText( hwnd, WindowTitle, sizeof( WindowTitle ) );
 
 //	if( strstr( WindowTitle, pIO->SearchName ) != NULL )

@@ -2,13 +2,15 @@
 
 //http://www.codeproject.com/Articles/5051/Various-methods-for-capturing-the-screen
 
-BOOL CScreenImage::CaptureRect(const CRect& rect)
+bool CScreenImage::CaptureRect(const CRect& rect)
 {
+#ifdef CAN_USE_ATL_IMG
    // detach and destroy the old bitmap if any attached
    CImage::Destroy(); //-> this will error because the bitmap is still attached...
+#endif
    
    // create a screen and a memory device context
-   HDC hDCScreen = ::CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
+   HDC hDCScreen = ::CreateDC(("DISPLAY"), NULL, NULL, NULL);
    HDC hDCMem = ::CreateCompatibleDC(hDCScreen);
    // create a compatible bitmap and select it in the memory DC
    HBITMAP hBitmap = 
@@ -22,7 +24,9 @@ BOOL CScreenImage::CaptureRect(const CRect& rect)
                         hDCScreen, 
                         rect.left, rect.top, dwRop);
    // attach bitmap handle to this object
+#ifdef CAN_USE_ATL_IMG
    Attach(hBitmap);
+#endif
 
    // restore the memory DC and perform cleanup
    ::SelectObject(hDCMem, hBmpOld);
@@ -32,13 +36,13 @@ BOOL CScreenImage::CaptureRect(const CRect& rect)
    return bRet;
 }
 
-BOOL CScreenImage::CaptureRectConvert(const CRect& rect)
+bool CScreenImage::CaptureRectConvert(const CRect& rect)
 {
     HDC hdcMemDC = NULL;
     HBITMAP hbmScreen = NULL;
     BITMAP bmpScreen;
 
-    HDC hdcScreen = ::CreateDC(_T("DISPLAY"), NULL, NULL, NULL);
+    HDC hdcScreen = ::CreateDC(("DISPLAY"), NULL, NULL, NULL);
     hdcMemDC = CreateCompatibleDC( hdcScreen ); 
     hbmScreen = CreateCompatibleBitmap( hdcScreen, rect.Width(), rect.Height() );
     SelectObject( hdcMemDC, hbmScreen );
@@ -90,19 +94,19 @@ BOOL CScreenImage::CaptureRectConvert(const CRect& rect)
     return 0;
 }
 
-BOOL CScreenImage::CaptureScreen()
+bool CScreenImage::CaptureScreen()
 {
 	CRect rect(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
 	return CaptureRect(rect);
 }
 
-BOOL CScreenImage::CaptureScreenConvert()
+bool CScreenImage::CaptureScreenConvert()
 {
 	CRect rect(0, 0, ::GetSystemMetrics(SM_CXSCREEN), ::GetSystemMetrics(SM_CYSCREEN));
 	return CaptureRectConvert(rect);
 }
 
-BOOL CScreenImage::CaptureWindow(HWND hWnd)
+bool CScreenImage::CaptureWindow(HWND hWnd)
 {
    BOOL bRet = FALSE;
    if(::IsWindow(hWnd))
@@ -115,7 +119,7 @@ BOOL CScreenImage::CaptureWindow(HWND hWnd)
    return bRet;
 }
 
-BOOL CScreenImage::CaptureWindowConvert(HWND hWnd)
+bool CScreenImage::CaptureWindowConvert(HWND hWnd)
 {
    BOOL bRet = FALSE;
    if(::IsWindow(hWnd))
@@ -146,11 +150,14 @@ void CScreenImage::SetToColor( unsigned char R, unsigned char G, unsigned char B
 			*( byteptr + rowBase + x * 4 + 0 ) = B; 
 		}
 	}/**/
+#ifdef CAN_USE_ATL_IMG
 	for( int y = 0; y < bi.biHeight; y += 1 )
 		for( int x = 0; x < bi.biWidth; x += 1 )
 			SetPixel( x, y, RGB( R, G, B ) );
+#endif
 }
 
+#ifdef CAN_USE_ATL_IMG
 void CScreenImage::WriteOurBitmapToDC( int Upscale, int ShiftX, int ShiftY, CImage *DestImg )
 {
 	if( DestImg == NULL ) 
@@ -185,6 +192,7 @@ void CScreenImage::WriteOurBitmapToDC( int Upscale, int ShiftX, int ShiftY, CIma
 		}
 	}
 }
+#endif
 
 void CScreenImage::Resample( MEImageDescRGB32 &NewSize )
 {

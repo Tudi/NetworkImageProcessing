@@ -9,10 +9,13 @@ struct MEImageDescRGB32
 	unsigned int PixelByteCount;	//kinda hardcoded to 4
 	unsigned int Stride;		// should be 3 * width or more. Given in byte count 
 	unsigned char *Data;
-	int		ErodeRadius,ErodeLimit;
+	int			ErodeRadius,ErodeLimit;
 };
 
-class CScreenImage : public CImage
+class CScreenImage
+#ifdef CAN_USE_ATL_IMG
+	: public CImage
+#endif
 {
 public:
 	CScreenImage()
@@ -43,14 +46,16 @@ public:
 			MEDesc = NULL;
 		}
 	}
-    BOOL CaptureRect(const CRect& rect) throw();
-    BOOL CaptureRectConvert(const CRect& rect) throw();
-    BOOL CaptureScreen() throw();
-    BOOL CaptureScreenConvert() throw();
-    BOOL CaptureWindow(HWND hWnd) throw();
-    BOOL CaptureWindowConvert(HWND hWnd) throw();
+    bool CaptureRect(const CRect& rect) throw();
+    bool CaptureRectConvert(const CRect& rect) throw();
+    bool CaptureScreen() throw();
+    bool CaptureScreenConvert() throw();
+    bool CaptureWindow(HWND hWnd) throw();
+    bool CaptureWindowConvert(HWND hWnd) throw();
 	void SetToColor( unsigned char R, unsigned char G, unsigned char B );
+#ifdef CAN_USE_ATL_IMG
 	void WriteOurBitmapToDC( int Upscale = 1, int ShiftX = 0, int ShiftY = 0, CImage *DestImg = NULL );
+#endif
 	unsigned int GetRequiredByteCount() { return ActiveImageHeight * ActiveImageStride; }
 //junk
 	HANDLE	hDIB;

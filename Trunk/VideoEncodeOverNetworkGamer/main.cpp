@@ -1,4 +1,5 @@
 #include "StdAfx.h"
+#include <conio.h>
 
 GlobalStore GlobalData;
 
@@ -248,7 +249,7 @@ void ScreenCaptureAndSendThread( void *arg )
 			if( SleepAdjustment > 0 )
 				SleepAdjustment = 0;
 			if( -SleepAdjustment > ShouldSleepMSTheoretical )
-				SleepAdjustment = -ShouldSleepMSTheoretical;
+				SleepAdjustment = -(int)ShouldSleepMSTheoretical;
 			if( ShouldSleepMSTheoretical + SleepAdjustment > 0 )
 				Sleep( ShouldSleepMSTheoretical + SleepAdjustment );
 		}
