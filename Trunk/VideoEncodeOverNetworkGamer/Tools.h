@@ -21,4 +21,33 @@ public:
 
 void GetProcessNameList( ProcessNameList * );
 
+
+struct SampleStore
+{
+	unsigned int Value;
+	unsigned int Stamp;
+};
+
+class ShortTermDataUsageSampler
+{
+public:
+	ShortTermDataUsageSampler()
+	{
+		HistoryDuration = 0;
+	}
+	int IsStarted( )
+	{
+		return ( HistoryDuration > 0 );
+	}
+	void Init( int HistoryDurationMilliSeconds )
+	{
+		HistoryDuration = HistoryDurationMilliSeconds;
+	}
+	void			AddSample( unsigned int val );
+	unsigned int	GetSumInterval();
+private:
+	std::list<SampleStore*> Samples;
+	unsigned int			HistoryDuration;
+};
+
 #endif

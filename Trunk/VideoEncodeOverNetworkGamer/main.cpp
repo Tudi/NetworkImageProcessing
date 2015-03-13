@@ -80,6 +80,7 @@ void ScreenCaptureAndSendThread( void *arg )
 
 	//only init network if other inits were fine. This is to avoid blocking ports on some error
 	ServerNetwork NetworkListener;
+	NetworkListener.NetworkUsageStat.Init( 10000 );
 
 	//this is also used for network buffer
 	unsigned int ZlibBufferSize;
@@ -232,7 +233,7 @@ void ScreenCaptureAndSendThread( void *arg )
 		if( ( GlobalData.ShowStatistics == 1 && LoopCounter % SHOW_STATS_EVERY_N_FRAMES == 0 ) || GlobalData.ShowStatistics > 1 )
 		{
 			unsigned int CurLoopStamp = GetTickCount();
-			printf( "Statistics : Time required overall : %d. AVG FPS %d. Could achieve FPS %d. CPU Usage %.2f\n\n", EndLoop - Start, 1000 / ( ( CurLoopStamp - StartLoopStamp ) / LoopCounter ), 1000 / ( FPSSum / LoopCounter ), (float)GetCurrentCPUUsage() );
+			printf( "Statistics : Time required overall : %d. AVG FPS %d. Could achieve FPS %d. CPU Usage %.2f. Network usage %d KByte/s \n\n", EndLoop - Start, 1000 / ( ( CurLoopStamp - StartLoopStamp ) / LoopCounter ), 1000 / ( FPSSum / LoopCounter ), (float)GetCurrentCPUUsage(), NetworkListener.NetworkUsageStat.GetSumInterval() / 10 / 1024 );
 			End = EndLoop;
 		}
 

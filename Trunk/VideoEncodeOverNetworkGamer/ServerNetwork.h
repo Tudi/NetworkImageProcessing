@@ -42,5 +42,7 @@ public:
     std::map<unsigned int, SOCKET> sessions; 
 
 	int MaxSocketBufferSize;
+
+	ShortTermDataUsageSampler NetworkUsageStat;
 };
 

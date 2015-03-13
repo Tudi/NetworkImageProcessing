@@ -150,6 +150,53 @@ void GetProcessNameList( ProcessNameList *Ret )
 	EnumWindows( EnumWindowsProc, (LPARAM)Ret );
 }
 
+void ShortTermDataUsageSampler::AddSample( unsigned int val )
+{
+	if( HistoryDuration == 0 )
+		return;
+	SampleStore *NewSample = (SampleStore *)malloc( sizeof( SampleStore ) );
+	NewSample->Value = val;
+	NewSample->Stamp = GetTimer();
+	Samples.push_front( NewSample );
+}
+
+unsigned int ShortTermDataUsageSampler::GetSumInterval()
+{
+	if( HistoryDuration == 0 )
+		return 0;
+	unsigned int Sum = 0;
+//	unsigned int SampleCount = 0;
+	unsigned int StampNow = GetTimer();
+	unsigned int StampLimit = StampNow - HistoryDuration;
+	std::list<SampleStore*>::iterator itr1,itr2;
+	for( itr1 = Samples.begin(); itr1 != Samples.end(); itr1++ )
+	{
+		SampleStore *Sample = *itr1;
+		if( Sample->Stamp >= StampLimit )
+		{
+			Sum += Sample->Value;
+//			SampleCount++;
+		}
+		else
+			break;
+	}
+	// will broably delete last value in most cases
+	for( ; itr1 != Samples.end(); )
+	{
+		itr2 = itr1;
+		itr1++;
+		SampleStore *Sample = *itr2;
+		if( Sample->Stamp < StampLimit )
+		{
+			Samples.erase( itr2 );
+			free( Sample );
+		}
+	}
+//	if( SampleCount > 0 )
+//		return ( Sum / SampleCount );
+	return Sum;
+}
+
 #if 0
 BOOL IsAltTabWindow(HWND hwnd)
 {

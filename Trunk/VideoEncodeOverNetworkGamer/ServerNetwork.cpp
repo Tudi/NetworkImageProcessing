@@ -153,6 +153,8 @@ void ServerNetwork::sendToAll(char *packets, int totalSize)
         currentSocket = iter->second;
         iSendResult = send( currentSocket, packets, totalSize, 0 );
 
+		NetworkUsageStat.AddSample( totalSize );
+
 //		for( int i = 0; i < 60; i++ )
 //			printf( "0x%02X ", (unsigned char)( packets[i] ) );
 
