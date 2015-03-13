@@ -12,6 +12,8 @@ int main(array<System::String ^> ^args)
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false); 
 
+	memset( &GlobalData, 0, sizeof( GlobalData ) );
+
 	// Create the main window and run it
 	Application::Run( gcnew Form1() );
 

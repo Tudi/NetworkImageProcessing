@@ -14,11 +14,3 @@
 #include "../VideoEncodeOverNetworkGamer/DataProcessing.h"
 
 #include "DataSender.h"
-/*
-#include <stdlib.h>
-#include <malloc.h>
-#include <memory.h>
-#include <string.h>
-#include <conio.h>
-#include <assert.h>
-*/

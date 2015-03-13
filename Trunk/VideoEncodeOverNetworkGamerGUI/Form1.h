@@ -9,6 +9,7 @@ namespace VideoEncodeOverNetworkGamerGUI {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
+	using namespace System::Runtime::InteropServices;
 
 	/// <summary>
 	/// Summary for Form1
@@ -459,9 +460,11 @@ namespace VideoEncodeOverNetworkGamerGUI {
 	private: System::Void FC_B_Apply_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
 //		MessageBoxW(NULL, L"Error msg", L"Error", MB_OK );
-		ShutDownAllDataProcessing();
-		InitDataProcessing();
-		StartDataProcessing();
+		char *stringPointer = (char*) Marshal::StringToHGlobalAnsi( this->FC_D_WindowName->Text ).ToPointer();
+		GlobalData.WindowName = _strdup( stringPointer );
+//		ShutDownAllDataProcessing();
+//		InitDataProcessing();
+//		StartDataProcessing();
 	}
 
 	private: System::Void Form1_Load(System::Object^  sender, System::EventArgs^  e) 
