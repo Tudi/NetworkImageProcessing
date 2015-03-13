@@ -15,16 +15,17 @@
 #include <memory.h>
 //#include <tchar.h>
 
-#define CAN_USE_ATL_IMG
+//#define CAN_USE_ATL_IMG
 
 // TODO: reference additional headers your program requires here
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
-#ifdef CAN_USE_ATL_IMG
+#if defined( CAN_USE_ATL_IMG ) && !defined( LIB_BUILD )
 	#include <atlimage.h>
 #else
 	#include <atltypes.h>
+	#include <atlstr.h>
 #endif
 #include <assert.h>
 #include <winsock2.h>

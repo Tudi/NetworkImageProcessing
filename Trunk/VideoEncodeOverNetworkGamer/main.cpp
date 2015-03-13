@@ -3,6 +3,7 @@
 
 GlobalStore GlobalData;
 
+#if defined( CAN_USE_ATL_IMG ) && !defined( LIB_BUILD )
 void main()
 {
 	//load the settings from the ini file
@@ -22,3 +23,4 @@ void main()
 
 	printf("Shut down complete\n");
 }
+#endif

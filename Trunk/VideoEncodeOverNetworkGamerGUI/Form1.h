@@ -44,7 +44,7 @@ namespace VideoEncodeOverNetworkGamerGUI {
 	private: System::Windows::Forms::ComboBox^  FC_D_WindowName;
 	protected: 
 
-	private: System::Windows::Forms::Label^  FC_L_WindowName;
+
 	private: System::Windows::Forms::Label^  FC_L_Resize;
 	private: System::Windows::Forms::Label^  FC_L_Width;
 	private: System::Windows::Forms::TextBox^  FC_E_Width;
@@ -90,6 +90,8 @@ namespace VideoEncodeOverNetworkGamerGUI {
 	private: System::Windows::Forms::Label^  FC_L_Port;
 
 	private: System::Windows::Forms::TextBox^  FC_E_Port;
+	private: System::Windows::Forms::Button^  FC_B_WindowRefresh;
+
 
 
 
@@ -111,7 +113,6 @@ namespace VideoEncodeOverNetworkGamerGUI {
 		void InitializeComponent(void)
 		{
 			this->FC_D_WindowName = (gcnew System::Windows::Forms::ComboBox());
-			this->FC_L_WindowName = (gcnew System::Windows::Forms::Label());
 			this->FC_L_Resize = (gcnew System::Windows::Forms::Label());
 			this->FC_L_Width = (gcnew System::Windows::Forms::Label());
 			this->FC_E_Width = (gcnew System::Windows::Forms::TextBox());
@@ -139,6 +140,7 @@ namespace VideoEncodeOverNetworkGamerGUI {
 			this->FC_L_CPU1 = (gcnew System::Windows::Forms::Label());
 			this->FC_L_Port = (gcnew System::Windows::Forms::Label());
 			this->FC_E_Port = (gcnew System::Windows::Forms::TextBox());
+			this->FC_B_WindowRefresh = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// FC_D_WindowName
@@ -150,15 +152,6 @@ namespace VideoEncodeOverNetworkGamerGUI {
 			this->FC_D_WindowName->Name = L"FC_D_WindowName";
 			this->FC_D_WindowName->Size = System::Drawing::Size(121, 21);
 			this->FC_D_WindowName->TabIndex = 0;
-			// 
-			// FC_L_WindowName
-			// 
-			this->FC_L_WindowName->AutoSize = true;
-			this->FC_L_WindowName->Location = System::Drawing::Point(1, 7);
-			this->FC_L_WindowName->Name = L"FC_L_WindowName";
-			this->FC_L_WindowName->Size = System::Drawing::Size(77, 13);
-			this->FC_L_WindowName->TabIndex = 1;
-			this->FC_L_WindowName->Text = L"Window Name";
 			// 
 			// FC_L_Resize
 			// 
@@ -409,11 +402,22 @@ namespace VideoEncodeOverNetworkGamerGUI {
 			this->FC_E_Port->TabIndex = 30;
 			this->FC_E_Port->Text = L"6888";
 			// 
+			// FC_B_WindowRefresh
+			// 
+			this->FC_B_WindowRefresh->Location = System::Drawing::Point(4, 0);
+			this->FC_B_WindowRefresh->Name = L"FC_B_WindowRefresh";
+			this->FC_B_WindowRefresh->Size = System::Drawing::Size(113, 23);
+			this->FC_B_WindowRefresh->TabIndex = 31;
+			this->FC_B_WindowRefresh->Text = L"Refresh Window List";
+			this->FC_B_WindowRefresh->UseVisualStyleBackColor = true;
+			this->FC_B_WindowRefresh->Click += gcnew System::EventHandler(this, &Form1::FC_B_WindowRefresh_Click);
+			// 
 			// Form1
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(332, 451);
+			this->Controls->Add(this->FC_B_WindowRefresh);
 			this->Controls->Add(this->FC_E_Port);
 			this->Controls->Add(this->FC_L_Port);
 			this->Controls->Add(this->FC_L_CPU1);
@@ -441,7 +445,6 @@ namespace VideoEncodeOverNetworkGamerGUI {
 			this->Controls->Add(this->FC_E_Width);
 			this->Controls->Add(this->FC_L_Width);
 			this->Controls->Add(this->FC_L_Resize);
-			this->Controls->Add(this->FC_L_WindowName);
 			this->Controls->Add(this->FC_D_WindowName);
 			this->Name = L"Form1";
 			this->ShowIcon = false;
@@ -455,6 +458,18 @@ namespace VideoEncodeOverNetworkGamerGUI {
 
 	private: System::Void FC_B_Apply_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
+//		MessageBoxW(NULL, L"Error msg", L"Error", MB_OK );
+		ShutDownAllDataProcessing();
+		InitDataProcessing();
+		StartDataProcessing();
+	}
+
+	private: System::Void Form1_Load(System::Object^  sender, System::EventArgs^  e) 
+	{
+
+	}
+	private: System::Void FC_B_WindowRefresh_Click(System::Object^  sender, System::EventArgs^  e) 
+	{
 		this->FC_D_WindowName->Items->Clear();
 		FC_D_WindowName->Items->Add( "Desktop" );
 		FC_D_WindowName->SelectedIndex = 0;
@@ -466,12 +481,6 @@ namespace VideoEncodeOverNetworkGamerGUI {
 			String^ clistr = gcnew String( Name );
 			this->FC_D_WindowName->Items->Add( clistr );
 		}
-//		MessageBoxW(NULL, L"Error msg", L"Error", MB_OK );
-	}
-
-	private: System::Void Form1_Load(System::Object^  sender, System::EventArgs^  e) 
-	{
-
 	}
 };
 }

@@ -12,12 +12,10 @@ int main(array<System::String ^> ^args)
 	Application::EnableVisualStyles();
 	Application::SetCompatibleTextRenderingDefault(false); 
 
-	InitDefaultWorkerThreadSettings();
-
 	// Create the main window and run it
 	Application::Run( gcnew Form1() );
 
-	ShutDownNetworkThreads();
+	ShutDownAllDataProcessing();
 
 	return 0;
 }

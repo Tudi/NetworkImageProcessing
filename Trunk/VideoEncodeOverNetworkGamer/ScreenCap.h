@@ -13,7 +13,7 @@ struct MEImageDescRGB32
 };
 
 class CScreenImage
-#ifdef CAN_USE_ATL_IMG
+#if defined( CAN_USE_ATL_IMG ) && !defined( LIB_BUILD )
 	: public CImage
 #endif
 {
@@ -53,7 +53,7 @@ public:
     bool CaptureWindow(HWND hWnd) throw();
     bool CaptureWindowConvert(HWND hWnd, int StartX = 0, int StartY = 0, int ForceWidth = 0, int ForceHeight = 0 ) throw();
 	void SetToColor( unsigned char R, unsigned char G, unsigned char B );
-#ifdef CAN_USE_ATL_IMG
+#if defined( CAN_USE_ATL_IMG ) && !defined( LIB_BUILD )
 	void WriteOurBitmapToDC( int Upscale = 1, int ShiftX = 0, int ShiftY = 0, CImage *DestImg = NULL );
 #endif
 	unsigned int GetRequiredByteCount() { return ActiveImageHeight * ActiveImageStride; }

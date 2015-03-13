@@ -7,14 +7,11 @@
 #include <stdio.h>
 #include <map>
 #include <atltypes.h>
+#include <atlstr.h>
 
 #include "../VideoEncodeOverNetworkGamer/GamerPCDefines.h"
-#include "../VideoEncodeOverNetworkGamer/Resampling.h"
 #include "../VideoEncodeOverNetworkGamer/Tools.h"
-#include "../VideoEncodeOverNetworkGamer/PreciseTimer.h"
-#include "../VideoEncodeOverNetworkGamer/zlib.h"
-#include "../VideoEncodeOverNetworkGamer/ScreenCap.h"
-#include "../VideoEncodeOverNetworkGamer/ServerNetwork.h"
+#include "../VideoEncodeOverNetworkGamer/DataProcessing.h"
 
 #include "DataSender.h"
 /*

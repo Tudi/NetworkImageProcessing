@@ -59,8 +59,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="User32.lib Ws2_32.lib ../VideoEncodeOverNetworkGamer/zlib_d.lib ../VideoEncodeOverNetworkGamer/DebugLib/VideoEncodeOverNetworkGamer.lib $(NOINHERIT)"
+				AdditionalDependencies="User32.lib Ws2_32.lib Gdi32.lib ../VideoEncodeOverNetworkGamer/zlib_d.lib ../VideoEncodeOverNetworkGamer/DebugLib/VideoEncodeOverNetworkGamer.lib $(NOINHERIT)"
 				LinkIncremental="2"
+				ForceSymbolReferences="__DllMainCRTStartup@12"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="2"
@@ -200,14 +201,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\DataSender.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\DataSender.h"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -274,27 +267,7 @@
 			Name="Source Files GamerPC"
 			>
 			<File
-				RelativePath="..\VideoEncodeOverNetworkGamer\GamerPCDefines.h"
-				>
-			</File>
-			<File
-				RelativePath="..\VideoEncodeOverNetworkGamer\PreciseTimer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\VideoEncodeOverNetworkGamer\Resampling.h"
-				>
-			</File>
-			<File
-				RelativePath="..\VideoEncodeOverNetworkGamer\ServerNetwork.h"
-				>
-			</File>
-			<File
-				RelativePath="..\VideoEncodeOverNetworkGamer\Tools.h"
-				>
-			</File>
-			<File
-				RelativePath="..\VideoEncodeOverNetworkGamer\zlib.h"
+				RelativePath="..\VideoEncodeOverNetworkGamer\DataProcessing.h"
 				>
 			</File>
 		</Filter>

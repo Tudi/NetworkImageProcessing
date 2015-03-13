@@ -4,7 +4,7 @@
 
 bool CScreenImage::CaptureRect(const CRect& rect)
 {
-#ifdef CAN_USE_ATL_IMG
+#if defined( CAN_USE_ATL_IMG ) && !defined( LIB_BUILD )
    // detach and destroy the old bitmap if any attached
    CImage::Destroy(); //-> this will error because the bitmap is still attached...
 #endif
@@ -24,7 +24,7 @@ bool CScreenImage::CaptureRect(const CRect& rect)
                         hDCScreen, 
                         rect.left, rect.top, dwRop);
    // attach bitmap handle to this object
-#ifdef CAN_USE_ATL_IMG
+#if defined( CAN_USE_ATL_IMG ) && !defined( LIB_BUILD )
    Attach(hBitmap);
 #endif
 
@@ -137,6 +137,7 @@ bool CScreenImage::CaptureWindowConvert(HWND hWnd, int StartX, int StartY, int F
    return bRet;
 }
 
+#if defined( CAN_USE_ATL_IMG ) && !defined( LIB_BUILD )
 void CScreenImage::SetToColor( unsigned char R, unsigned char G, unsigned char B )
 {
 	//copy the bitmap to our buffer
@@ -156,14 +157,13 @@ void CScreenImage::SetToColor( unsigned char R, unsigned char G, unsigned char B
 			*( byteptr + rowBase + x * 4 + 0 ) = B; 
 		}
 	}/**/
-#ifdef CAN_USE_ATL_IMG
 	for( int y = 0; y < bi.biHeight; y += 1 )
 		for( int x = 0; x < bi.biWidth; x += 1 )
 			SetPixel( x, y, RGB( R, G, B ) );
-#endif
 }
+#endif
 
-#ifdef CAN_USE_ATL_IMG
+#if defined( CAN_USE_ATL_IMG ) && !defined( LIB_BUILD )
 void CScreenImage::WriteOurBitmapToDC( int Upscale, int ShiftX, int ShiftY, CImage *DestImg )
 {
 	if( DestImg == NULL ) 
