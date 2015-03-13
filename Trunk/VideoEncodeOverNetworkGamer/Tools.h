@@ -42,6 +42,7 @@ public:
 	void Init( int HistoryDurationMilliSeconds )
 	{
 		HistoryDuration = HistoryDurationMilliSeconds;
+		Samples.clear();
 	}
 	void			AddSample( unsigned int val );
 	unsigned int	GetSumInterval();

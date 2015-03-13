@@ -13,12 +13,14 @@ struct GlobalStore
 	int				CompressionStrength;
 	int				FPSLimit;
 	int				ShowStatistics;
-	char			*EncoderIP;
+//	char			*EncoderIP;
 	char			*EncoderPort;
 //	int				MaxPacketSize;
 	int				ThreadIsRunning;
 	int				IncludeWindowBorder;
 	int				StartX,StartY,ForcedWidth,ForcedHeight;
+	int				StatAvgNetworkUsage, StatMaxPossibleFPS, StatAvgFPS;
+	float			StatLastCPUUsage;
 };
 
 extern GlobalStore GlobalData;
