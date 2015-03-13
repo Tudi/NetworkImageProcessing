@@ -23,6 +23,16 @@ void ConvertLineToParam( char *Line )
 			GlobalData.ResizeHeight = atoi( StrValue );
 		else if( strstr( Line, "WindowName" ) )
 			GlobalData.WindowName = _strdup( StrValue );
+		else if( strstr( Line, "IncludeBorder" ) )
+			GlobalData.IncludeWindowBorder = atoi( StrValue );
+		else if( strstr( Line, "CaptureStartX" ) )
+			GlobalData.StartX = atoi( StrValue );
+		else if( strstr( Line, "CaptureStartY" ) )
+			GlobalData.StartY = atoi( StrValue );
+		else if( strstr( Line, "CaptureWidth" ) )
+			GlobalData.ForcedWidth = atoi( StrValue );
+		else if( strstr( Line, "CaptureHeight" ) )
+			GlobalData.ForcedHeight = atoi( StrValue );
 		else if( strstr( Line, "ResizeMethod" ) )
 			GlobalData.ResizeMethod = atoi( StrValue );
 		else if( strstr( Line, "CompresionStrength" ) )

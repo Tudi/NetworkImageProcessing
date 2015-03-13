@@ -51,7 +51,7 @@ public:
     bool CaptureScreen() throw();
     bool CaptureScreenConvert() throw();
     bool CaptureWindow(HWND hWnd) throw();
-    bool CaptureWindowConvert(HWND hWnd) throw();
+    bool CaptureWindowConvert(HWND hWnd, int StartX = 0, int StartY = 0, int ForceWidth = 0, int ForceHeight = 0 ) throw();
 	void SetToColor( unsigned char R, unsigned char G, unsigned char B );
 #ifdef CAN_USE_ATL_IMG
 	void WriteOurBitmapToDC( int Upscale = 1, int ShiftX = 0, int ShiftY = 0, CImage *DestImg = NULL );

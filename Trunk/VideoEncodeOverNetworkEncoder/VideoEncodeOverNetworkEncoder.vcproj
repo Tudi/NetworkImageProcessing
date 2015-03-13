@@ -216,10 +216,6 @@
 				RelativePath=".\VideoEncodeOverNetworkEncoder.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\zlib.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

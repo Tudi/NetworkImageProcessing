@@ -2,6 +2,16 @@
 @ Expected name it not case sensitive and can be only a part of the full name. Ex : "craft" instead "Minecraft"
 WindowName=
 
+@ Should the video include the border of the window ?
+IncludeBorder=0
+
+@ Adjust these to capture part of the window
+@ Invalid values shall be adjusted to fit inside the window size
+CaptureStartX=0
+CaptureStartY=0
+CaptureWidth=0
+CaptureHeight=0
+
 @ In case your network traffic can not handle the data amount. Resize the image to exactly that you use when streaming
 @ In case you are streaming with 20 FPS, and your stream resolution is 720p, that is 1280*720*4*20 = 73728000 bytes per second that needs to be transferred to the secondary PC ( 73 MB / sec is a lot ! )
 @ If you do not wish to resize the captured image than leave set ResizeToWidth to -1

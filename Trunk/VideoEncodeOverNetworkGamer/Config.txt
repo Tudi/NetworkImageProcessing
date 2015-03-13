@@ -1,11 +1,21 @@
 @ Target window name you wish to capture. Leave it to empty if you wish to capture your whole screen
 WindowName=calc
 
+@ Should the video include the border of the window ?
+IncludeBorder=1
+
+@ Adjust these to capture part of the window
+@ Invalid values shall be adjusted to fit inside the window size
+CaptureStartX=0
+CaptureStartY=0
+CaptureWidth=0
+CaptureHeight=0
+
 @ In case your network traffic can not handle the data amount. Resize the image to exactly that you use when streaming
 @ In case you are streaming with 20 FPS, and your stream resolution is 720p, that is 1280*720*4*20 = 73728000 bytes per second that needs to be transferred to the secondary PC ( 73 MB / sec is a lot ! )
 @ If you do not wish to resize the captured image that leave this to -1
 @ If you resize, i advise you to maintain aspect ratio to not make the screen look silly
-ResizeToWidth=640
+ResizeToWidth=-1
 ResizeToHeight=480
 
 @ Resize algorithm
@@ -13,7 +23,7 @@ ResizeToHeight=480
 @ 1 - Direct Resize. The least CPU usage. It is not encoder friendly !
 @ 2 - 2x tap filtering. Moderate CPU usage. Encoder Friendly
 @ 3 - 3x tap filtering. High CPU usage. Encoder friendly
-ResizeMethod=1
+ResizeMethod=-1
 
 @ Reduce Color depth. Reduces network traffic amount. In some cases it might not be encoder friendly. 
 @ 1 - no reduction

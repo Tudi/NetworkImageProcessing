@@ -16,10 +16,10 @@ void CaptureScreen()
 		delete GlobalData.CapturedScreen;
 	GlobalData.CapturedScreen = new CScreenImage;
 
-	if( GlobalData.WndSrc == NULL )
-		GlobalData.CapturedScreen->CaptureScreenConvert();
-	else
-		GlobalData.CapturedScreen->CaptureWindowConvert( GlobalData.WndSrc );
+//	if( GlobalData.WndSrc == NULL )
+//		GlobalData.CapturedScreen->CaptureScreenConvert();
+//	else
+	GlobalData.CapturedScreen->CaptureWindowConvert( GlobalData.WndSrc, GlobalData.StartX, GlobalData.StartY, GlobalData.ForcedWidth, GlobalData.ForcedHeight );
 }
 
 void ScreenCaptureAndSendThread( void *arg )
@@ -35,18 +35,60 @@ void ScreenCaptureAndSendThread( void *arg )
 	//do we have a source window or a desktop ?
 	int SrcWidth, SrcHeight;
 	if( GlobalData.WindowName[0] != 0 )
-	{
 		GlobalData.WndSrc = FindWindowWithNameNonThreaded( GlobalData.WindowName );
-		CRect rect;
-		::GetWindowRect( GlobalData.WndSrc, rect );
-		SrcWidth = rect.right - rect.left;
-		SrcHeight = rect.bottom - rect.top;
-	}
 	if( GlobalData.WndSrc == NULL )
+		GlobalData.WndSrc = GetDesktopWindow();
+
+	CRect rect,rect2;
+	::GetWindowRect( GlobalData.WndSrc, rect );
+	int WindowFullWidth = rect.right - rect.left;
+	int WindowFullHeight = rect.bottom - rect.top;
+//	int BorderThicknessX = GetSystemMetrics(SM_CXSIZEFRAME);
+//	int BorderThicknessY = GetSystemMetrics(SM_CYSIZEFRAME);
+//	int CaptionThicknessY = GetSystemMetrics(SM_CYSIZEFRAME);
+//	int MenuThicknessY = GetSystemMetrics(SM_CYMENU);
+	::GetClientRect( GlobalData.WndSrc, rect2 );
+	int WindowFullClientWidth = rect2.right - rect2.left;
+	int WindowFullClientHeight = rect2.bottom - rect2.top;
+
+	//remove invalid setting values
+	if( GlobalData.StartX < 0 || GlobalData.StartX > WindowFullWidth )
+		GlobalData.StartX = 0;
+	if( GlobalData.StartY < 0 || GlobalData.StartY > WindowFullHeight )
+		GlobalData.StartY = 0;
+	if( GlobalData.ForcedWidth < 0 || GlobalData.ForcedWidth > WindowFullWidth )
+		GlobalData.ForcedWidth = 0;
+	if( GlobalData.ForcedHeight < 0 || GlobalData.ForcedHeight > WindowFullHeight )
+		GlobalData.ForcedHeight = 0;
+
+	SrcWidth = WindowFullWidth - GlobalData.StartX;
+	SrcHeight = WindowFullHeight - GlobalData.StartY;
+	if( GlobalData.IncludeWindowBorder == 0 )
 	{
-		GlobalData.WndSrc = NULL;
-		GetDesktopResolution( SrcWidth, SrcHeight );
+		int CaptionThicknessY = 0;
+		int BorderWidth = WindowFullWidth - ( rect2.right - rect2.left );
+		int BorderHeaders = WindowFullHeight - ( rect2.bottom - rect2.top ) - BorderWidth;
+		GlobalData.StartX += rect2.left + ( BorderWidth + 1 )/ 2;
+		GlobalData.StartY += rect2.top + BorderHeaders + ( BorderWidth + 1 ) / 2;
+		SrcWidth -= ( BorderWidth + 1 ) / 2;
+		SrcHeight -= ( ( BorderWidth + 1 ) / 2 + BorderHeaders );
 	}
+
+	if( GlobalData.ForcedWidth > 0 )
+		SrcWidth = GlobalData.ForcedWidth;
+	if( GlobalData.ForcedHeight > 0 )
+		SrcHeight = GlobalData.ForcedHeight;
+
+	if( SrcWidth > WindowFullWidth )
+		SrcWidth = WindowFullWidth;
+	if( SrcHeight > WindowFullHeight )
+		SrcHeight = WindowFullHeight;
+
+	//use one single variable everywhere
+	if( SrcWidth != WindowFullWidth )
+		GlobalData.ForcedWidth = SrcWidth;
+	if( SrcHeight != WindowFullHeight )
+		GlobalData.ForcedHeight = SrcHeight;
 
 	//check if user messed up aspect ratio
 	MEImageDescRGB32 NewSize;
@@ -83,7 +125,7 @@ void ScreenCaptureAndSendThread( void *arg )
 	NetworkListener.NetworkUsageStat.Init( 10000 );
 
 	//this is also used for network buffer
-	unsigned int ZlibBufferSize;
+	int ZlibBufferSize;
 	if( GlobalData.ResizeWidth * GlobalData.ResizeHeight > SrcWidth * SrcHeight )
 		ZlibBufferSize = GlobalData.ResizeWidth * GlobalData.ResizeHeight;
 	else
@@ -94,10 +136,10 @@ void ScreenCaptureAndSendThread( void *arg )
 
 	//start the neverending loop
 	StartTimer();
-	unsigned int LoopCounter = 1;
-	unsigned int FPSSum = 0;
-	unsigned int PacketSizeSum = 0;
-	unsigned int StartLoopStamp = GetTickCount();
+	int LoopCounter = 1;
+	int FPSSum = 0;
+	int PacketSizeSum = 0;
+	int StartLoopStamp = GetTickCount();
 	signed int SleepAdjustment = 0;
 
 	printf("Waiting for client connection\n");
@@ -240,9 +282,9 @@ void ScreenCaptureAndSendThread( void *arg )
 		if( 1000 / GlobalData.FPSLimit > (int)( EndLoop - Start ) )
 		{
 			//in theory you can calculate how much you need to sleep. In practice real sleep should be smaller due to thread switch or other delays
-			unsigned int ShouldSleepMSTheoretical = 1000 / GlobalData.FPSLimit - ( EndLoop - Start );
-			unsigned int CurLoopStamp = GetTickCount();
-			unsigned int PracticalFPS = 1000 / ( ( CurLoopStamp - StartLoopStamp ) / LoopCounter );
+			int ShouldSleepMSTheoretical = 1000 / GlobalData.FPSLimit - ( EndLoop - Start );
+			int CurLoopStamp = GetTickCount();
+			int PracticalFPS = 1000 / ( ( CurLoopStamp - StartLoopStamp ) / LoopCounter );
 			if( PracticalFPS < GlobalData.FPSLimit )
 				SleepAdjustment = SleepAdjustment - 1;
 			else if( PracticalFPS > GlobalData.FPSLimit )

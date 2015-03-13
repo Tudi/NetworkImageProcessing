@@ -119,14 +119,20 @@ bool CScreenImage::CaptureWindow(HWND hWnd)
    return bRet;
 }
 
-bool CScreenImage::CaptureWindowConvert(HWND hWnd)
+bool CScreenImage::CaptureWindowConvert(HWND hWnd, int StartX, int StartY, int ForceWidth, int ForceHeight)
 {
    BOOL bRet = FALSE;
    if(::IsWindow(hWnd))
    {
       CRect rect;
       ::GetWindowRect(hWnd, rect);
-      bRet = CaptureRectConvert(rect);
+	  rect.left += StartX;
+	  rect.top += StartY;
+	  if( ForceWidth )
+		  rect.right = rect.left + ForceWidth;
+	  if( ForceHeight )
+		  rect.bottom = rect.top + ForceHeight;
+      bRet = CaptureRectConvert( rect );
    }
    return bRet;
 }

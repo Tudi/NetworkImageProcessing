@@ -17,6 +17,8 @@ struct GlobalStore
 	char			*EncoderPort;
 //	int				MaxPacketSize;
 	int				ThreadIsRunning;
+	int				IncludeWindowBorder;
+	int				StartX,StartY,ForcedWidth,ForcedHeight;
 };
 
 extern GlobalStore GlobalData;
