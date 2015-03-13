@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib_d.lib"
+				AdditionalDependencies="../VideoEncodeOverNetworkGamer/zlib_d.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="../VideoEncodeOverNetworkGamer/zlib.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -265,11 +265,23 @@
 			Name="Source Files Shared"
 			>
 			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\NetworkPackets.h"
+				>
+			</File>
+			<File
 				RelativePath="..\VideoEncodeOverNetworkGamer\PreciseTimer.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\VideoEncodeOverNetworkGamer\PreciseTimer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\zconf.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\zlib.h"
 				>
 			</File>
 		</Filter>

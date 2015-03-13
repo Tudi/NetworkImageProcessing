@@ -7,17 +7,6 @@
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
 #pragma comment (lib, "Ws2_32.lib")
 
-#pragma pack(push,1)
-struct NetworkPacketHeader
-{
-	int Version;
-	int Width,Stride,Height,PixelByteCount;
-	int CompressionStrength;
-	int CompressedSize;
-	int	PacketSize;
-};
-#pragma pack(pop)
-
 #define USE_NETWORK_BUFFERING
 
 class ClientNetwork

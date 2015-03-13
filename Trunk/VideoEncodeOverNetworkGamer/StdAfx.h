@@ -34,6 +34,7 @@
 #include <map>
 
 #include "GamerPCDefines.h"
+#include "NetworkPackets.h"
 
 #include "ScreenCap.h"
 #include "Resampling.h"

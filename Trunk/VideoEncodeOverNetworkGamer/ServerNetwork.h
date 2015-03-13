@@ -1,16 +1,6 @@
 #pragma once
 //#pragma comment (lib, "Ws2_32.lib")
 
-#pragma pack(push,1)
-struct NetworkPacketHeader
-{
-	int Version;
-	int Width,Stride,Height,PixelByteCount;
-	int CompressionStrength;
-	int CompressedSize;
-	int	PacketSize;
-};
-#pragma pack(pop)
 
 class ServerNetwork
 {

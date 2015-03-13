@@ -254,6 +254,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\NetworkPackets.h"
+				>
+			</File>
+			<File
 				RelativePath=".\PreciseTimer.cpp"
 				>
 			</File>

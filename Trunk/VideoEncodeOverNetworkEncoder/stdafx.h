@@ -21,9 +21,10 @@
 #include <atlimage.h>
 #include <assert.h>
 
+#include "../VideoEncodeOverNetworkGamer/NetworkPackets.h"
 #include "IniReader.h"
-#include "PreciseTimer.h"
-#include "zlib.h"
+#include "../VideoEncodeOverNetworkGamer/PreciseTimer.h"
+#include "../VideoEncodeOverNetworkGamer/zlib.h"
 #include "ClientNetwork.h"
 
 void MyMain();
