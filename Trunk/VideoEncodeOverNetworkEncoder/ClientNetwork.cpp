@@ -154,7 +154,7 @@ int ClientNetwork::ReplyToSender( char *packets, int totalSize )
 	return iSendResult;
 }
 
-int ClientNetwork::ReceivePacketNonBlocking( char *recvbuf )
+int ClientNetwork::ReceivePacketNonBlocking( char *recvbuf, unsigned int BufferSize )
 {
 	int WriteIndex = 0;
 	int SumRead = 0;
@@ -195,6 +195,11 @@ TRY_MORE_READ_ON_LACK_OF_DATA:
 		{
 			NetworkPacketHeader *ph = (NetworkPacketHeader *)recvbuf;
 			RequiredRead = ph->PacketSize;
+			if( BufferSize < RequiredRead )
+			{
+				assert( false );
+				return 0;
+			}
 		}
 		WriteIndex += iResult;
 		SumRead += iResult;

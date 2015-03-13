@@ -36,7 +36,7 @@ public:
     ~ClientNetwork(void);
 
 	int receivePackets(char *);
-	int ReceivePacketNonBlocking( char * );
+	int ReceivePacketNonBlocking( char *, unsigned int );
 	int ReplyToSender(char *, int);
 
 	int MaxSocketBufferSize;

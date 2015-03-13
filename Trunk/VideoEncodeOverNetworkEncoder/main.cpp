@@ -136,6 +136,7 @@ void ListenAndPaint( void *arg )
 	zlib_stream.opaque = Z_NULL;
 	unsigned char		*ZlibInputBuffer = NULL;
 	unsigned char		*ZlibOutputBuffer = NULL;
+	unsigned int		ZlibBufferSize;
 
 	ClientNetwork NetworkListener;
 
@@ -154,8 +155,9 @@ void ListenAndPaint( void *arg )
 	if( inflateInit( &zlib_stream ) != Z_OK )
 		assert( false );
 	//this is also used for network buffer
-	ZlibInputBuffer = (unsigned char*)malloc( SrcWidth * SrcHeight * RGB_BYTE_COUNT );
-	ZlibOutputBuffer = (unsigned char*)malloc( SrcWidth * SrcHeight * RGB_BYTE_COUNT );
+	ZlibBufferSize = MAX_RESOLUTION_SUPPORTED * RGB_BYTE_COUNT + sizeof( NetworkPacketHeader ) + 128;
+	ZlibInputBuffer = (unsigned char*)malloc( ZlibBufferSize );
+	ZlibOutputBuffer = (unsigned char*)malloc( ZlibBufferSize );
 	assert( SrcWidth * SrcHeight * RGB_BYTE_COUNT < GlobalData.MaxPacketSize );
 
 	//start the neverending loop
@@ -177,7 +179,7 @@ void ListenAndPaint( void *arg )
 #ifndef USE_NETWORK_BUFFERING
 		RecvCount = NetworkListener.receivePackets( (char*)ZlibInputBuffer );
 #else
-		RecvCount = NetworkListener.ReceivePacketNonBlocking( (char*)ZlibInputBuffer );
+		RecvCount = NetworkListener.ReceivePacketNonBlocking( (char*)ZlibInputBuffer, ZlibBufferSize );
 #endif
 
 		if( RecvCount < 0 )
@@ -212,7 +214,7 @@ void ListenAndPaint( void *arg )
 		{
 			inflateReset( &zlib_stream );
 			zlib_stream.next_out  = (Bytef*)ZlibOutputBuffer;
-			zlib_stream.avail_out = SrcWidth * SrcHeight * RGB_BYTE_COUNT;
+			zlib_stream.avail_out = ZlibBufferSize;
 			zlib_stream.next_in   = (Bytef*)ZlibInputBuffer + sizeof( NetworkPacketHeader );
 			zlib_stream.avail_in  = ph->CompressedSize;
 			int ret = inflate( &zlib_stream, Z_FINISH );

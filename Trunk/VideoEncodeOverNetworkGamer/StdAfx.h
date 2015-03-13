@@ -15,7 +15,7 @@
 #include <memory.h>
 //#include <tchar.h>
 
-//#define CAN_USE_ATL_IMG
+#define CAN_USE_ATL_IMG
 
 // TODO: reference additional headers your program requires here
 #include <stdio.h>
@@ -33,6 +33,8 @@
 
 #include <map>
 
+#include "GamerPCDefines.h"
+
 #include "ScreenCap.h"
 #include "Resampling.h"
 #include "IniReader.h"
@@ -41,5 +43,4 @@
 //#include "ImageTools.h"
 #include "zlib.h"
 #include "ServerNetwork.h"
-
-#include "GamerPCDefines.h"
+#include "systemMetrics.h"

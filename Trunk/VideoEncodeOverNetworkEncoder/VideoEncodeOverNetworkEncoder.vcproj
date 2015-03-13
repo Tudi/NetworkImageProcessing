@@ -193,14 +193,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\PreciseTimer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PreciseTimer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -266,6 +258,18 @@
 			</File>
 			<File
 				RelativePath=".\VideoEncodeOverNetworkEncoder.rc"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Source Files Shared"
+			>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\PreciseTimer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\PreciseTimer.h"
 				>
 			</File>
 		</Filter>

@@ -42,4 +42,5 @@ struct GlobalStore
 
 extern GlobalStore GlobalData;
 
-#define RGB_BYTE_COUNT 4
+#define RGB_BYTE_COUNT				4
+#define MAX_RESOLUTION_SUPPORTED	4000*4000	//wow, so hacky, we should dynamically reallocate the network buffer based on requirements

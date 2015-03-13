@@ -232,7 +232,7 @@ void ScreenCaptureAndSendThread( void *arg )
 		if( ( GlobalData.ShowStatistics == 1 && LoopCounter % SHOW_STATS_EVERY_N_FRAMES == 0 ) || GlobalData.ShowStatistics > 1 )
 		{
 			unsigned int CurLoopStamp = GetTickCount();
-			printf( "Statistics : Time required overall : %d. AVG FPS %d. Could achieve FPS %d\n\n", EndLoop - Start, 1000 / ( ( CurLoopStamp - StartLoopStamp ) / LoopCounter ), 1000 / ( FPSSum / LoopCounter ) );
+			printf( "Statistics : Time required overall : %d. AVG FPS %d. Could achieve FPS %d. CPU Usage %.2f\n\n", EndLoop - Start, 1000 / ( ( CurLoopStamp - StartLoopStamp ) / LoopCounter ), 1000 / ( FPSSum / LoopCounter ), (float)GetCurrentCPUUsage() );
 			End = EndLoop;
 		}
 
@@ -270,6 +270,7 @@ void main()
 {
 	//load the settings from the ini file
 	LoadSettingsFromFile( );
+	InitCPUUsageMonitor();
 
 	_beginthread( ScreenCaptureAndSendThread, 0, (void*)NULL);
 

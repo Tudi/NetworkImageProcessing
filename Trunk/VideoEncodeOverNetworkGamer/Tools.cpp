@@ -56,8 +56,8 @@ BOOL CALLBACK EnumWindowsProcFindWndByName( HWND hwnd, LPARAM lParam )
 		return FALSE;
 
 	//only search on main window names. If you need window in window search than enable this
-	if( GetParent( hwnd ) != 0 )
-		return FALSE;
+//	if( GetParent( hwnd ) != 0 )
+//		return FALSE;
 
 	GetWindowText( hwnd, WindowTitle, sizeof( WindowTitle ) );
 
@@ -93,3 +93,150 @@ HWND FindWindowWithNameNonThreaded( char *Name )
 
 	return MySearch.ret;
 }
+
+ProcessNameList::~ProcessNameList()
+{
+	for( std::list<char*>::iterator itr = Names.begin(); itr != Names.end(); itr++ )
+		free( *itr );
+	Names.clear();
+}
+
+BOOL CALLBACK EnumWindowsProc( HWND hwnd, LPARAM lParam )
+{
+	char WindowTitle[ DEFAULT_BUFLEN ];
+
+    if( hwnd == GetShellWindow() )
+        return false;
+
+	//only search on main window names. If you need window in window search than enable this
+//	HWND hwndroot = GetAncestor(hwnd, GA_ROOTOWNER);
+//	if( 
+//		GetWindow( hwnd, GW_OWNER ) == 0 
+//		|| 
+//		GetAncestor( hwnd, GA_PARENT ) 
+//		IsAltTabWindow( hwnd ) == FALSE
+//		hwndroot == GetLastVisibleActivePopUpOfWindow( hwndroot )
+//		hwndroot != GetShellWindow()
+//		hwnd != hwndroot
+//		)
+//		return TRUE;
+ 
+	if( IsWindowVisible( hwnd ) == FALSE )
+		return TRUE;
+
+//	RECT WindowSize;
+//	GetClientRect( hwnd, &WindowSize );
+//	if( WindowSize.right <= 32 || WindowSize.bottom <= 32 )
+//		return true;
+
+	GetWindowText( hwnd, WindowTitle, sizeof( WindowTitle ) );
+
+	//window without a name
+	if( WindowTitle[0] == 0 )
+		return TRUE;
+
+	ProcessNameList *pIO = (ProcessNameList*)lParam;
+
+	pIO->Count++;
+	pIO->Names.push_back( _strdup( WindowTitle ) );
+
+	return TRUE;
+}
+
+void GetProcessNameList( ProcessNameList *Ret )
+{
+	Ret->Count = 0;
+	Ret->Names.clear();
+	EnumWindows( EnumWindowsProc, (LPARAM)Ret );
+}
+
+#if 0
+BOOL IsAltTabWindow(HWND hwnd)
+{
+	// Start at the root owner
+	HWND hwndWalk = GetAncestor(hwnd, GA_ROOTOWNER);
+
+	// See if we are the last active visible popup
+	HWND hwndTry;
+	while( (hwndTry = GetLastActivePopup( hwndWalk )) != hwndTry )
+	{
+		if( IsWindowVisible( hwndTry ) ) 
+			break;
+		hwndWalk = hwndTry;
+	}
+	return hwndWalk == hwnd;
+}
+
+HWND GetLastVisibleActivePopUpOfWindow(HWND window)
+{
+    HWND lastPopUp = GetLastActivePopup( window );
+    if( IsWindowVisible( lastPopUp ) )
+        return lastPopUp;
+    else if( lastPopUp == window)
+        return NULL;
+    else
+        return GetLastVisibleActivePopUpOfWindow( lastPopUp );
+}
+
+#include <tlhelp32.h>
+#include <psapi.h>
+#pragma comment(lib, "Psapi.lib")
+char *GetProcessName( DWORD processID )
+{
+    TCHAR szProcessName[MAX_PATH] = TEXT(" ");
+    HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, processID );
+    if( NULL != hProcess )
+    {
+        HMODULE hMod;
+        DWORD cbNeeded;
+        if ( EnumProcessModules( hProcess, &hMod, sizeof(hMod), &cbNeeded) )
+            GetModuleBaseName( hProcess, hMod, szProcessName, sizeof(szProcessName)/sizeof(TCHAR) );
+	    CloseHandle( hProcess );
+		return _strdup( szProcessName );
+    }
+    CloseHandle( hProcess );
+	return NULL;
+}
+
+void GetProcessNameList( ProcessNameList *Ret )
+{
+	HANDLE hProcessSnap;
+	PROCESSENTRY32 pe32;
+
+	// Take a snapshot of all processes in the system.
+	hProcessSnap = CreateToolhelp32Snapshot( TH32CS_SNAPPROCESS, 0 );
+	if( hProcessSnap == INVALID_HANDLE_VALUE )
+	{
+//		printf( TEXT("CreateToolhelp32Snapshot (of processes)") );
+		return;
+	}
+
+	// Set the size of the structure before using it.
+	pe32.dwSize = sizeof( PROCESSENTRY32 );
+	if( !Process32First( hProcessSnap, &pe32 ) )
+	{
+//		printf( TEXT("Process32First") ); // show cause of failure
+		CloseHandle( hProcessSnap );          // clean the snapshot object
+		return;
+	}
+
+	do
+	{
+		Ret->Count++;
+		char *Name = GetProcessName( pe32.th32ProcessID );
+		if( Name != NULL )
+		{
+			if( Name[0] == ' ' )
+			{
+				Ret->Names.push_back( _strdup( pe32.szExeFile ) );
+				free( Name );
+			}
+			else
+				Ret->Names.push_back( Name );
+		}
+	} while( Process32Next( hProcessSnap, &pe32 ) );
+
+	CloseHandle( hProcessSnap );
+	return;
+}
+#endif
