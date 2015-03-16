@@ -51,4 +51,6 @@ private:
 	unsigned int			HistoryDuration;
 };
 
+char *stristr( char *SearchIn, char *SearchWhat );
+
 #endif

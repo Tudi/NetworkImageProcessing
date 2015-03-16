@@ -95,8 +95,8 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
-			ManagedExtensions="2"
+			CharacterSet="0"
+			ManagedExtensions="1"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -133,8 +133,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(NoInherit)"
+				AdditionalDependencies="User32.lib Ws2_32.lib Gdi32.lib ../VideoEncodeOverNetworkGamer/zlib.lib ../VideoEncodeOverNetworkGamer/ReleaseLib/VideoEncodeOverNetworkGamer.lib $(NOINHERIT)"
 				LinkIncremental="1"
+				ForceSymbolReferences="__DllMainCRTStartup@12"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				EntryPointSymbol="main"

@@ -234,9 +234,10 @@ void ListenAndPaint( void *arg )
 			End = EndCompress;
 		}
 
+		int VideoStreamSizeChangeDetected = ( GlobalData.Width != ph->Width ) || ( GlobalData.Height != ph->Height );
 		GlobalData.Width = ph->Width;
 		GlobalData.Height = ph->Height;
-		if( GlobalData.UseCustomPicureSize == 0 && GlobalData.Width != 0 )
+		if( ( GlobalData.UseCustomPicureSize == 0 || VideoStreamSizeChangeDetected ) && GlobalData.Width != 0 )
 		{
 			//get border size for this window
 			CRect rect,rect2;
