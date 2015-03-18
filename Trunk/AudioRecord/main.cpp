@@ -75,21 +75,25 @@ public:
 	}
 	HRESULT SetWriteFormat( WAVEFORMATEX *NewFormat )
 	{
-		memcpy( &wfxWrite, NewFormat, sizeof( wfxWrite ) );
-		CircularBufferSize = wfxWrite.nAvgBytesPerSec * CacheDuration;
-		CircularBuffer = (unsigned char *)realloc( CircularBuffer, CircularBufferSize + wfxWrite.nAvgBytesPerSec * 4 );
+		if( NewFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE )
+			memcpy( &wfxWrite, NewFormat, sizeof( WAVEFORMATEXTENSIBLE ) );
+		else
+			memcpy( &wfxWrite, NewFormat, sizeof( WAVEFORMATEX ) );
+		CircularBufferSize = wfxWrite.Format.nAvgBytesPerSec * CacheDuration;
+		CircularBuffer = (unsigned char *)realloc( CircularBuffer, CircularBufferSize + wfxWrite.Format.nAvgBytesPerSec * 4 );
 		return S_OK;
 	}
 	HRESULT SetReadFormat( WAVEFORMATEX *NewFormat )
 	{
-		memcpy( &wfxRead, NewFormat, sizeof( wfxRead ) );
-//		CircularBufferSize = wfxRead.nAvgBytesPerSec * CacheDuration;
-//		CircularBuffer = (unsigned char *)realloc( CircularBuffer, CircularBufferSize + wfxRead.nAvgBytesPerSec * 4 );
+		if( NewFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE )
+			memcpy( &wfxRead, NewFormat, sizeof( WAVEFORMATEXTENSIBLE ) );
+		else
+			memcpy( &wfxRead, NewFormat, sizeof( WAVEFORMATEX ) );
 		return S_OK;
 	}
 	HRESULT CopyData( unsigned char *Data, int FrameCount, DWORD Flags, int *done )
 	{
-		int WriteBlockSize = wfxWrite.nChannels * wfxWrite.wBitsPerSample / 8;
+		int WriteBlockSize = wfxWrite.Format.nChannels * wfxWrite.Format.wBitsPerSample / 8;
 		int	TotalBufferSize = FrameCount * WriteBlockSize;
 
 		if( WriteIndex + TotalBufferSize <= CircularBufferSize )
@@ -111,7 +115,7 @@ public:
 		TotalSamplesStored += TotalBufferSize;
 
 		//just testing. Remove me later
-		if( DebugForceStopRecordSeconds != 0 && TotalSamplesStored > DebugForceStopRecordSeconds * wfxWrite.nAvgBytesPerSec )
+		if( DebugForceStopRecordSeconds != 0 && TotalSamplesStored > DebugForceStopRecordSeconds * wfxWrite.Format.nAvgBytesPerSec )
 			return E_FAIL;
 
 		return S_OK;
@@ -124,10 +128,10 @@ public:
 		if( BufferFrameCount == 0 )
 			return S_OK;
 
-		int ReadBlockSize = wfxRead.nChannels * wfxRead.wBitsPerSample / 8;
-		int WriteBlockSize = wfxWrite.nChannels * wfxWrite.wBitsPerSample / 8;
+		int ReadBlockSize = wfxRead.Format.nChannels * wfxRead.Format.wBitsPerSample / 8;
+		int WriteBlockSize = wfxWrite.Format.nChannels * wfxWrite.Format.wBitsPerSample / 8;
 		// need to convert sampling rate
-		float SamplingRateRatio = ( float )wfxWrite.nSamplesPerSec / ( float ) wfxRead.nSamplesPerSec;
+		float SamplingRateRatio = ( float )wfxWrite.Format.nSamplesPerSec / ( float ) wfxRead.Format.nSamplesPerSec;
 		int	TotalBufferSize = ( (int)( SamplingRateRatio * BufferFrameCount * WriteBlockSize ) * 4 + 3 ) / 4;
 
 		if( TotalSamplesRead + TotalBufferSize > TotalSamplesStored )
@@ -135,30 +139,28 @@ public:
 
 		int IsBothFloatFormat = 0;
 		int IsBothPCMFormat = 0;
-		if( wfxWrite.wFormatTag == WAVE_FORMAT_EXTENSIBLE && wfxRead.wFormatTag == WAVE_FORMAT_EXTENSIBLE )
+		if( wfxWrite.Format.wFormatTag == WAVE_FORMAT_EXTENSIBLE && wfxRead.Format.wFormatTag == WAVE_FORMAT_EXTENSIBLE )
 		{
-			WAVEFORMATEXTENSIBLE *AlternateFormatRead = (WAVEFORMATEXTENSIBLE *)&wfxRead;
-			WAVEFORMATEXTENSIBLE *AlternateFormatWrite = (WAVEFORMATEXTENSIBLE *)&wfxWrite;
-			IsBothFloatFormat = ( AlternateFormatRead->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT ) && ( AlternateFormatWrite->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT );
-			IsBothPCMFormat = ( AlternateFormatRead->SubFormat == KSDATAFORMAT_SUBTYPE_PCM ) && ( AlternateFormatWrite->SubFormat == KSDATAFORMAT_SUBTYPE_PCM );
+			IsBothFloatFormat = IsEqualGUID( wfxRead.SubFormat, KSDATAFORMAT_SUBTYPE_IEEE_FLOAT ) && IsEqualGUID( wfxWrite.SubFormat, KSDATAFORMAT_SUBTYPE_IEEE_FLOAT );
+			IsBothPCMFormat = IsEqualGUID( wfxRead.SubFormat, KSDATAFORMAT_SUBTYPE_PCM ) && IsEqualGUID( wfxWrite.SubFormat, KSDATAFORMAT_SUBTYPE_PCM );
 		}
-		else if( wfxWrite.wFormatTag == WAVE_FORMAT_IEEE_FLOAT && wfxRead.wFormatTag == WAVE_FORMAT_IEEE_FLOAT )
+		else if( wfxWrite.Format.wFormatTag == WAVE_FORMAT_IEEE_FLOAT && wfxRead.Format.wFormatTag == WAVE_FORMAT_IEEE_FLOAT )
 			IsBothFloatFormat = 1;
-		else if( wfxWrite.wFormatTag == WAVE_FORMAT_PCM && wfxRead.wFormatTag == WAVE_FORMAT_PCM )
+		else if( wfxWrite.Format.wFormatTag == WAVE_FORMAT_PCM && wfxRead.Format.wFormatTag == WAVE_FORMAT_PCM )
 			IsBothPCMFormat = 1;
 		//pray to the lord jezuz that we guess it. Else expect some noise :(
 		if( IsBothPCMFormat == 0 && IsBothFloatFormat == 0 )
 			IsBothFloatFormat = 1;
 
-		if( wfxRead.nChannels == wfxWrite.nChannels 
-			&& wfxRead.wBitsPerSample == wfxWrite.wBitsPerSample 
-			&& wfxRead.nSamplesPerSec == wfxWrite.nSamplesPerSec 
-			&& wfxRead.wFormatTag == wfxWrite.wFormatTag )
+		if( wfxRead.Format.nChannels == wfxWrite.Format.nChannels 
+			&& wfxRead.Format.wBitsPerSample == wfxWrite.Format.wBitsPerSample 
+			&& wfxRead.Format.nSamplesPerSec == wfxWrite.Format.nSamplesPerSec 
+			&& wfxRead.Format.wFormatTag == wfxWrite.Format.wFormatTag )
 		{
 			if( ReadIndex + TotalBufferSize <= CircularBufferSize )
 			{
 				memcpy( &Data[0], &CircularBuffer[ReadIndex], TotalBufferSize );
-				ReadIndex += TotalBufferSize;
+//				ReadIndex += TotalBufferSize;
 			}
 			else
 			{
@@ -168,14 +170,14 @@ public:
 				int CanCopyBeggining = TotalBufferSize - CanCopyToEnd;
 				if( CanCopyBeggining > 0 )
 					memcpy( &Data[CanCopyToEnd], &CircularBuffer[0], CanCopyBeggining );
-				ReadIndex = CanCopyBeggining;
+//				ReadIndex = CanCopyBeggining;
 			} 
 		}
 		else if( IsBothFloatFormat == 1 )
 		{
 			// need to convert channel count
-			int WriteBytesPerChannel = wfxWrite.wBitsPerSample / 8;
-			int ReadBytesPerChannel = wfxRead.wBitsPerSample / 8;
+			int WriteBytesPerChannel = wfxWrite.Format.wBitsPerSample / 8;
+			int ReadBytesPerChannel = wfxRead.Format.wBitsPerSample / 8;
 			// need to convert bits per sample
 			for( int i = 0; i < BufferFrameCount; i++ )
 			{
@@ -187,7 +189,7 @@ public:
 				for( int SourceIndex = SourceIndexStart; SourceIndex % CircularBufferSize <= SourceIndexEnd; SourceIndex += WriteBlockSize )
 				{
 					unsigned char *SourceData = &CircularBuffer[ ( ( ReadIndex + SourceIndex ) % CircularBufferSize ) ];
-					for( int SourceChannels = 0; SourceChannels < wfxWrite.nChannels; SourceChannels++ )
+					for( int SourceChannels = 0; SourceChannels < wfxWrite.Format.nChannels; SourceChannels++ )
 					{
 						SampleSum += ( *(float*)&SourceData[ SourceChannels * WriteBytesPerChannel ] );
 						SampleCount++;
@@ -196,15 +198,15 @@ public:
 				SampleSum = SampleSum / SampleCount;
 
 				unsigned char *DestData = &Data[ i * ReadBlockSize ];
-				for( int DestChannels = 0; DestChannels < wfxRead.nChannels; DestChannels++ )
+				for( int DestChannels = 0; DestChannels < wfxRead.Format.nChannels; DestChannels++ )
 					*(float*)&DestData[ DestChannels * ReadBytesPerChannel ] = SampleSum;	//wow, will this produce memory write error on last value ?
 			}
 		}
-		else if( IsBothPCMFormat == 1 && wfxRead.wBitsPerSample == wfxWrite.wBitsPerSample && wfxRead.wBitsPerSample == 32 )
+		else if( IsBothPCMFormat == 1 && wfxRead.Format.wBitsPerSample == wfxWrite.Format.wBitsPerSample && wfxRead.Format.wBitsPerSample == 32 )
 		{
 			// need to convert channel count
-			int WriteBytesPerChannel = wfxWrite.wBitsPerSample / 8;
-			int ReadBytesPerChannel = wfxRead.wBitsPerSample / 8;
+			int WriteBytesPerChannel = wfxWrite.Format.wBitsPerSample / 8;
+			int ReadBytesPerChannel = wfxRead.Format.wBitsPerSample / 8;
 			// need to convert bits per sample
 			for( int i = 0; i < BufferFrameCount; i++ )
 			{
@@ -216,7 +218,7 @@ public:
 				for( int SourceIndex = SourceIndexStart; SourceIndex % CircularBufferSize <= SourceIndexEnd; SourceIndex += WriteBlockSize )
 				{
 					unsigned char *SourceData = &CircularBuffer[ ( SourceIndex % CircularBufferSize ) ];
-					for( int SourceChannels = 0; SourceChannels < wfxWrite.nChannels; SourceChannels++ )
+					for( int SourceChannels = 0; SourceChannels < wfxWrite.Format.nChannels; SourceChannels++ )
 					{
 						SampleSum += ( *(int*)&SourceData[ SourceChannels * WriteBytesPerChannel ] );
 						SampleCount++;
@@ -225,7 +227,7 @@ public:
 				SampleSum = SampleSum / SampleCount;
 
 				unsigned char *DestData = &Data[ i * ReadBlockSize ];
-				for( int DestChannels = 0; DestChannels < wfxRead.nChannels; DestChannels++ )
+				for( int DestChannels = 0; DestChannels < wfxRead.Format.nChannels; DestChannels++ )
 					*(int*)&DestData[ DestChannels * ReadBytesPerChannel ] = SampleSum;	//wow, will this produce memory write error on last value ?
 			}
 		}
@@ -244,10 +246,10 @@ public:
 		if( BufferFrameCount == 0 || Data == NULL )
 			return S_OK;
 
-		int WriteBlockSize = wfxWrite.nChannels * wfxWrite.wBitsPerSample / 8;
-		int ReadBlockSize = wfxRead.nChannels * wfxRead.wBitsPerSample / 8;
+		int WriteBlockSize = wfxWrite.Format.nChannels * wfxWrite.Format.wBitsPerSample / 8;
+		int ReadBlockSize = wfxRead.Format.nChannels * wfxRead.Format.wBitsPerSample / 8;
 
-		float SamplingRateRatio = ( float )wfxWrite.nSamplesPerSec / ( float ) wfxRead.nSamplesPerSec;
+		float SamplingRateRatio = ( float )wfxWrite.Format.nSamplesPerSec / ( float ) wfxRead.Format.nSamplesPerSec;
 		int	TotalBufferSize = ( (int)( SamplingRateRatio * BufferFrameCount * WriteBlockSize ) * 4 + 3 ) / 4;
 
 		if( AudioConverter == NULL )
@@ -310,17 +312,17 @@ public:
 	}
 #endif
 
-	unsigned char	*CircularBuffer;
-	int				WriteIndex;
-	int				ReadIndex;
-	int				CacheDuration;
-	int				CircularBufferSize;
-	long			TotalSamplesStored;
-	long			TotalSamplesRead;
-	WAVEFORMATEX	wfxRead,wfxWrite;
-	int				DebugForceStopRecordSeconds;
+	unsigned char			*CircularBuffer;
+	int						WriteIndex;
+	int						ReadIndex;
+	int						CacheDuration;
+	int						CircularBufferSize;
+	long					TotalSamplesStored;
+	long					TotalSamplesRead;
+	WAVEFORMATEXTENSIBLE	wfxRead,wfxWrite;
+	int						DebugForceStopRecordSeconds;
 #ifdef SUPPORT_FOR_OS_AUDIO_CONVERSION
-	HACMSTREAM		AudioConverter;
+	HACMSTREAM				AudioConverter;
 #endif
 };
 
@@ -347,7 +349,7 @@ HRESULT RecordAudioStream(AudioBufferStore *pMySink)
     hr = CoCreateInstance( CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, IID_IMMDeviceEnumerator, (void**)&pEnumerator );
     EXIT_ON_ERROR(hr)
 
-    hr = pEnumerator->GetDefaultAudioEndpoint( eCapture, eConsole, &pDevice );
+    hr = pEnumerator->GetDefaultAudioEndpoint( eRender, eConsole, &pDevice );
     EXIT_ON_ERROR(hr)
 
     hr = pDevice->Activate( IID_IAudioClient, CLSCTX_ALL, NULL, (void**)&pAudioClient);
@@ -356,7 +358,7 @@ HRESULT RecordAudioStream(AudioBufferStore *pMySink)
     hr = pAudioClient->GetMixFormat(&pwfx);
     EXIT_ON_ERROR(hr)
 
-    hr = pAudioClient->Initialize( AUDCLNT_SHAREMODE_SHARED, 0, AUDIO_SAMPLE_DURATION, 0, pwfx, NULL );
+    hr = pAudioClient->Initialize( AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_LOOPBACK, AUDIO_SAMPLE_DURATION, 0, pwfx, NULL );
     EXIT_ON_ERROR(hr)
 
     // Get the size of the allocated buffer.
@@ -374,17 +376,19 @@ HRESULT RecordAudioStream(AudioBufferStore *pMySink)
     EXIT_ON_ERROR(hr)
 
     // Each loop fills about half of the shared buffer.
+	int LoopCounter = 0;
+	int ErrorCounter = 0;
     while (bDone == FALSE)
     {
         // Sleep for half the buffer duration.
 		// Calculate the actual duration of the allocated buffer.
 		DWORD hnsActualDuration = 1000 * bufferFrameCount / pwfx->nSamplesPerSec;
-        Sleep( hnsActualDuration / 2 );
+//        Sleep( hnsActualDuration / 2 );
 
         hr = pCaptureClient->GetNextPacketSize( &packetLength );
         EXIT_ON_ERROR(hr)
 
-        while (packetLength != 0)
+        while( packetLength != 0 )
         {
             // Get the available data in the shared buffer.
             hr = pCaptureClient->GetBuffer( &pData, &numFramesAvailable, &flags, NULL, NULL );
@@ -394,6 +398,8 @@ HRESULT RecordAudioStream(AudioBufferStore *pMySink)
             {
                 pData = NULL;  // Tell CopyData to write silence.
             }
+			if( flags & AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY )
+				ErrorCounter++;
 
             // Copy the available capture data to the audio sink.
             hr = pMySink->CopyData( pData, numFramesAvailable, flags, &bDone );
@@ -405,7 +411,7 @@ HRESULT RecordAudioStream(AudioBufferStore *pMySink)
             hr = pCaptureClient->GetNextPacketSize( &packetLength );
             EXIT_ON_ERROR(hr)
 
-//			printf( "write a new buffer of 1 second\n");
+			printf( "write a new buffer of x msecond. index %d Err %d size %d\n", LoopCounter++, ErrorCounter, numFramesAvailable );
         }
     }
 
@@ -489,7 +495,7 @@ HRESULT PlayAudioStream(AudioBufferStore *pMySource)
         // Sleep for half the buffer duration.
 //        Sleep((DWORD)(hnsActualDuration/REFTIMES_PER_MILLISEC/2));
 	    DWORD hnsActualDuration = 1000 * bufferFrameCount / pwfx->nSamplesPerSec;
-        Sleep( hnsActualDuration / 2 );
+//        Sleep( hnsActualDuration / 2 );
 
         // See how much buffer space is available.
         hr = pAudioClient->GetCurrentPadding(&numFramesPadding);
@@ -532,8 +538,8 @@ Exit:
 
 void main()
 {
-	AudioBufferStore AudioStore( 10 );
-	AudioStore.DebugForceStopRecordSeconds = 1;
+	AudioBufferStore AudioStore( 20 );
+	AudioStore.DebugForceStopRecordSeconds = 12;
 
 	printf("Started record\n");
 	RecordAudioStream( &AudioStore );
