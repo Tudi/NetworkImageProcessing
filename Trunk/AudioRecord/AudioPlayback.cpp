@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 
-HRESULT PlayAudioStream(AudioBufferStore *pMySource)
+void PlayAudioStream( void *arg )
 {
     HRESULT hr;
     IMMDeviceEnumerator *pEnumerator = NULL;
@@ -33,7 +33,7 @@ HRESULT PlayAudioStream(AudioBufferStore *pMySource)
     EXIT_ON_ERROR(hr)
 
     // Tell the audio source which format to use.
-    hr = pMySource->SetReadFormat(pwfx);
+    hr = AudioStore.SetReadFormat(pwfx);
     EXIT_ON_ERROR(hr)
 
     // Get the actual size of the allocated buffer.
@@ -48,7 +48,7 @@ HRESULT PlayAudioStream(AudioBufferStore *pMySource)
     EXIT_ON_ERROR(hr)
 
     // Load the initial data into the shared buffer.
-    hr = pMySource->LoadData( bufferFrameCount, pData, &flags );
+    hr = AudioStore.LoadData( bufferFrameCount, pData, &flags );
     EXIT_ON_ERROR(hr)
 
     hr = pRenderClient->ReleaseBuffer( bufferFrameCount, flags );
@@ -74,7 +74,7 @@ HRESULT PlayAudioStream(AudioBufferStore *pMySource)
         hr = pRenderClient->GetBuffer(numFramesAvailable, &pData);
         EXIT_ON_ERROR(hr)
 
-        hr = pMySource->LoadData(numFramesAvailable, pData, &flags);
+        hr = AudioStore.LoadData(numFramesAvailable, pData, &flags);
         EXIT_ON_ERROR(hr)
 
         hr = pRenderClient->ReleaseBuffer(numFramesAvailable, flags);
@@ -95,5 +95,5 @@ Exit:
     SAFE_RELEASE(pRenderClient)
 	CoUninitialize();
 
-    return hr;
+//    return hr;
 }

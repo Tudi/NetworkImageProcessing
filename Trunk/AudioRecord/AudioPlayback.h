@@ -1,3 +1,3 @@
 #pragma once
 
-HRESULT PlayAudioStream(AudioBufferStore *pMySource);
+void PlayAudioStream( void *arg );

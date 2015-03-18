@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 
-HRESULT RecordAudioStream(AudioBufferStore *pMySink)
+AudioBufferStore AudioStore;
+
+void RecordAudioStream( void *arg )
 {
     HRESULT hr;
     UINT32 bufferFrameCount;
@@ -41,7 +43,7 @@ HRESULT RecordAudioStream(AudioBufferStore *pMySink)
     EXIT_ON_ERROR(hr)
 
     // Notify the audio sink which format to use.
-	hr = pMySink->SetWriteFormat(pwfx);
+	hr = AudioStore.SetWriteFormat(pwfx);
     EXIT_ON_ERROR(hr)
 
     hr = pAudioClient->Start();  // Start recording.
@@ -74,7 +76,7 @@ HRESULT RecordAudioStream(AudioBufferStore *pMySink)
 				ErrorCounter++;
 
             // Copy the available capture data to the audio sink.
-            hr = pMySink->CopyData( pData, numFramesAvailable, flags, &bDone );
+            hr = AudioStore.StoreData( pData, numFramesAvailable, flags, &bDone );
             EXIT_ON_ERROR(hr)
 
             hr = pCaptureClient->ReleaseBuffer( numFramesAvailable );
@@ -98,5 +100,5 @@ Exit:
     SAFE_RELEASE(pCaptureClient)
 	CoUninitialize();
 
-    return hr;
+//    return hr;
 }

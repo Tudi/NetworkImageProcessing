@@ -1,3 +1,5 @@
 #pragma once
 
-HRESULT RecordAudioStream(AudioBufferStore *pMySink);
+extern AudioBufferStore AudioStore;
+
+void RecordAudioStream( void *arg );
