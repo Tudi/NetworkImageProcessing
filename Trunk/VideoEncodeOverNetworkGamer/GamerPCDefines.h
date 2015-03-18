@@ -13,14 +13,15 @@ struct GlobalStore
 	int				CompressionStrength;
 	int				FPSLimit;
 	int				ShowStatistics;
-//	char			*EncoderIP;
-	char			*EncoderPort;
+	char			*VideoNetworkIP;
+	char			*VideoNetworkPort;
 //	int				MaxPacketSize;
 	int				ThreadIsRunning;
 	int				IncludeWindowBorder;
 	int				StartX,StartY,ForcedWidth,ForcedHeight;
 	int				StatAvgNetworkUsage, StatMaxPossibleFPS, StatAvgFPS;
 	float			StatLastCPUUsage;
+	char			*SoundNetworkPort;
 };
 
 extern GlobalStore GlobalData;
@@ -28,6 +29,7 @@ extern GlobalStore GlobalData;
 #define DEFAULT_BUFLEN							200
 #define RGB_BYTE_COUNT							4	//not safe to macro this as default RGB byte count is actually 3 bytes
 #define MEMORY_SAFEGUARD_INTRINSIC_IMPLEMENT	128
+#define AUDIO_SAMPLE_DURATION					100*10000	
 
 enum WORKERTHREADSTATES
 {

@@ -1,6 +1,8 @@
 #include "StdAfx.h"
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
-ServerNetwork::ServerNetwork(void)
+ServerNetwork::ServerNetwork(char *IP, char *Port)
 {
 	// create WSADATA object
     WSADATA wsaData;
@@ -31,7 +33,7 @@ ServerNetwork::ServerNetwork(void)
     hints.ai_flags = AI_PASSIVE;
 
 	// Resolve the server address and port
-	iResult = getaddrinfo(NULL, GlobalData.EncoderPort, &hints, &result);
+	iResult = getaddrinfo(NULL, Port, &hints, &result);
 
     if ( iResult != 0 ) 
 	{

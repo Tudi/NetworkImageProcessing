@@ -16,7 +16,7 @@ int InitVideoProcessing()
 int InitNetwork()
 {
 	if( NetworkListener == NULL )
-		NetworkListener = new ServerNetwork;
+		NetworkListener = new ServerNetwork( GlobalData.VideoNetworkIP, GlobalData.VideoNetworkPort );
 	return 0;
 }
 

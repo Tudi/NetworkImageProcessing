@@ -44,7 +44,7 @@ void ConvertLineToParam( char *Line )
 //		else if( strstr( Line, "EncoderIP" ) )
 //			GlobalData.EncoderIP = _strdup( StrValue );
 		else if( strstr( Line, "ListenPort" ) )
-			GlobalData.EncoderPort = _strdup( StrValue );
+			GlobalData.VideoNetworkPort = _strdup( StrValue );
 //		else if( strstr( Line, "MaxNetworkPacketSize" ) )
 //			GlobalData.MaxPacketSize = atoi( StrValue );
 		else if( strstr( Line, "ReduceColorDepth" ) )

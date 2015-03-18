@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Msacm32.lib"
+				AdditionalDependencies="Msacm32.lib Ws2_32.lib "
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -93,7 +93,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
+			CharacterSet="0"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -133,6 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="Msacm32.lib Ws2_32.lib "
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
@@ -172,7 +173,35 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\AudioBufferStore.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AudioBufferStore.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AudioPlayback.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AudioPlayback.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AudioRecord.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\AudioRecord.h"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\StdAfx.h"
 				>
 			</File>
 		</Filter>
@@ -187,6 +216,50 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+		</Filter>
+		<Filter
+			Name="Source Files External"
+			>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\GamerPCDefines.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\NetworkPackets.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\PreciseTimer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\PreciseTimer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\ServerNetwork.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\ServerNetwork.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\SystemMetrics.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\SystemMetrics.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\Tools.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\Tools.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

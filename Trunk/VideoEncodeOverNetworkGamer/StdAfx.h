@@ -28,8 +28,6 @@
 	#include <atlstr.h>
 #endif
 #include <assert.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
 #include <process.h>
 
 #include <map>

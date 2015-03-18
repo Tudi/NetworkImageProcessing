@@ -5,7 +5,7 @@
 class ServerNetwork
 {
 public:
-    ServerNetwork(void);
+    ServerNetwork( char *IP, char *Port );
     ~ServerNetwork(void);
 
 	int HasConnections() { return !sessions.empty(); }
