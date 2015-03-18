@@ -1,8 +1,12 @@
 #include "StdAfx.h"
 #include "ClientNetwork.h"
+#include <winsock2.h>
+#include <ws2tcpip.h>
 
+// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
+#pragma comment (lib, "Ws2_32.lib")
 
-ClientNetwork::ClientNetwork(void)
+ClientNetwork::ClientNetwork( char *IP, char *Port )
 {
     // create WSADATA object
     WSADATA wsaData;
@@ -32,7 +36,7 @@ ClientNetwork::ClientNetwork(void)
 
 	
     //resolve server address and port 
-	iResult = getaddrinfo( GlobalData.CapturePCIP, GlobalData.CapturePCPort, &hints, &result);
+	iResult = getaddrinfo( IP, Port, &hints, &result);
 
     if( iResult != 0 ) 
     {
@@ -194,8 +198,8 @@ TRY_MORE_READ_ON_LACK_OF_DATA:
 		if( WriteIndex == 0 )
 		{
 			NetworkPacketHeader *ph = (NetworkPacketHeader *)recvbuf;
-			RequiredRead = ph->PacketSize;
-			if( BufferSize < RequiredRead )
+			RequiredRead = (int)ph->PacketSize;
+			if( (int)BufferSize < RequiredRead )
 			{
 				assert( false );
 				return 0;

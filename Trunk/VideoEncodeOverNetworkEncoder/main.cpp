@@ -138,7 +138,7 @@ void ListenAndPaint( void *arg )
 	unsigned char		*ZlibOutputBuffer = NULL;
 	unsigned int		ZlibBufferSize;
 
-	ClientNetwork NetworkListener;
+	ClientNetwork NetworkListener( GlobalData.CapturePCIP, GlobalData.CapturePCPort );
 
 	//do we have a source window or a desktop ?
 	int SrcWidth, SrcHeight;

@@ -1,11 +1,4 @@
 #pragma once
-// Networking libraries
-#include <winsock2.h>
-#include <Windows.h>
-#include <ws2tcpip.h>
-#include <stdio.h> 
-// Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
-#pragma comment (lib, "Ws2_32.lib")
 
 #define USE_NETWORK_BUFFERING
 
@@ -21,7 +14,7 @@ public:
     SOCKET ConnectSocket;
 
     // ctor/dtor
-    ClientNetwork(void);
+    ClientNetwork(char *IP, char *Port);
     ~ClientNetwork(void);
 
 	int receivePackets(char *);
