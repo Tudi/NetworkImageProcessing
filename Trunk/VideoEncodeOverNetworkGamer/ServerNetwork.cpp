@@ -104,17 +104,21 @@ ServerNetwork::ServerNetwork(char *IP, char *Port)
     }
 }
 
-
 ServerNetwork::~ServerNetwork(void)
 {
-	closesocket( ListenSocket );
-    if (iResult == SOCKET_ERROR) 
-        printf("closesocket function failed with error %d\n", WSAGetLastError());
+	CloseConnections();
+}
 
+void ServerNetwork::CloseConnections()
+{
 	std::map<unsigned int, SOCKET>::iterator iter;
     for (iter = sessions.begin(); iter != sessions.end(); iter++)
         closesocket( iter->second );
 	sessions.clear();
+	closesocket( ListenSocket );
+	ListenSocket = INVALID_SOCKET;
+    if (iResult == SOCKET_ERROR) 
+        printf("closesocket function failed with error %d\n", WSAGetLastError());
 }
 
 // accept new connections
@@ -139,6 +143,7 @@ bool ServerNetwork::acceptNewClient()
 
 	//we only accept 1 client ?
 	closesocket( ListenSocket );
+	ListenSocket = INVALID_SOCKET;
 
     return false;
 }
@@ -199,3 +204,17 @@ int ServerNetwork::receiveData(unsigned int client_id, char * recvbuf)
     return 0;
 }
 */
+
+void WaitAcceptNewConnectionsThread( void *arg )
+{
+	GlobalData.ThreadsAliveCount++;
+	ServerNetwork *Listener = (ServerNetwork *)arg;
+	while( GlobalData.ThreadIsRunning == 1 && Listener->ListenSocket != INVALID_SOCKET )
+		Listener->acceptNewClient();
+	GlobalData.ThreadsAliveCount--;
+}
+
+void StartWaitAcceptNewConnectionsThread( ServerNetwork *Listener )
+{
+	_beginthread( WaitAcceptNewConnectionsThread, 0, (void*)Listener );
+}

@@ -20,6 +20,7 @@ AudioBufferStore::AudioBufferStore( )
 	AudioConverter = NULL;
 #endif
 }
+
 AudioBufferStore::~AudioBufferStore()
 {
 	if( CircularBuffer != NULL )
@@ -35,11 +36,13 @@ AudioBufferStore::~AudioBufferStore()
 	}
 #endif
 }
+
 //use it before start
 void AudioBufferStore::SetCacheDuration( int NewDuration )
 {
 	CacheDuration = NewDuration;
 }
+
 HRESULT AudioBufferStore::SetWriteFormat( WAVEFORMATEX *NewFormat )
 {
 	if( NewFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE )
@@ -50,6 +53,7 @@ HRESULT AudioBufferStore::SetWriteFormat( WAVEFORMATEX *NewFormat )
 	CircularBuffer = (unsigned char *)realloc( CircularBuffer, CircularBufferSize + wfxWrite.Format.nAvgBytesPerSec * 4 );
 	return S_OK;
 }
+
 HRESULT AudioBufferStore::SetReadFormat( WAVEFORMATEX *NewFormat )
 {
 	if( NewFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE )
@@ -58,6 +62,7 @@ HRESULT AudioBufferStore::SetReadFormat( WAVEFORMATEX *NewFormat )
 		memcpy( &wfxRead, NewFormat, sizeof( WAVEFORMATEX ) );
 	return S_OK;
 }
+
 HRESULT AudioBufferStore::StoreData( unsigned char *Data, int FrameCount, DWORD Flags, int *done )
 {
 	int WriteBlockSize = wfxWrite.Format.nChannels * wfxWrite.Format.wBitsPerSample / 8;
@@ -276,3 +281,39 @@ HRESULT AudioBufferStore::LoadData2( int BufferFrameCount, BYTE *Data, DWORD *fl
 	return S_OK;
 }
 #endif
+
+int	AudioBufferStore::GetRequiredNetworkBufferSize() 
+{
+	return (TotalSamplesStored - TotalSamplesRead) * wfxWrite.Format.nBlockAlign + sizeof( WAVEFORMATEXTENSIBLE );
+}
+
+int AudioBufferStore::GetNetworkPacket( unsigned char *buff, int BuffSize )
+{
+	if( (TotalSamplesStored - TotalSamplesRead) <= 0 )
+		return 0;
+
+	int HeaderSize = sizeof( WAVEFORMATEXTENSIBLE );
+
+	int MaxBytesCanWrite = (TotalSamplesStored - TotalSamplesRead) * wfxWrite.Format.nBlockAlign;
+	if( BuffSize < MaxBytesCanWrite )
+		MaxBytesCanWrite = ( BuffSize - HeaderSize ) / wfxWrite.Format.nBlockAlign * wfxWrite.Format.nBlockAlign;
+
+	//write header
+	memcpy( &buff[0], &wfxWrite, HeaderSize );
+
+	//write content
+	if( ReadIndex + MaxBytesCanWrite <= CircularBufferSize )
+	{
+		memcpy( &buff[HeaderSize], &CircularBuffer[ReadIndex], MaxBytesCanWrite );
+	}
+	else
+	{
+		int CanCopyToEnd = CircularBufferSize - ReadIndex;
+		if( CanCopyToEnd > 0 )
+			memcpy( &buff[HeaderSize], &CircularBuffer[ReadIndex], CanCopyToEnd );
+		int CanCopyBeggining = MaxBytesCanWrite - CanCopyToEnd;
+		if( CanCopyBeggining > 0 )
+			memcpy( &buff[CanCopyToEnd], &CircularBuffer[0], CanCopyBeggining );
+	} 
+	return ( HeaderSize + MaxBytesCanWrite );
+}

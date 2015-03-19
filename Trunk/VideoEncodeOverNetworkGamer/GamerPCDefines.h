@@ -22,6 +22,7 @@ struct GlobalStore
 	int				StatAvgNetworkUsage, StatMaxPossibleFPS, StatAvgFPS;
 	float			StatLastCPUUsage;
 	char			*SoundNetworkPort;
+	int				ThreadsAliveCount;
 };
 
 extern GlobalStore GlobalData;

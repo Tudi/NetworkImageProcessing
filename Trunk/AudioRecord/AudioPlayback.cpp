@@ -58,7 +58,11 @@ void PlayAudioStream( void *arg )
     EXIT_ON_ERROR(hr)
 
     // Each loop fills about half of the shared buffer.
-    while (flags != AUDCLNT_BUFFERFLAGS_SILENT)
+	GlobalData.ThreadsAliveCount++;
+    while( 
+//		flags != AUDCLNT_BUFFERFLAGS_SILENT
+		GlobalData.ThreadIsRunning == 1
+		)
     {
         // Sleep for half the buffer duration.
 	    DWORD hnsActualDuration = 1000 * bufferFrameCount / pwfx->nSamplesPerSec;
@@ -80,8 +84,8 @@ void PlayAudioStream( void *arg )
         hr = pRenderClient->ReleaseBuffer(numFramesAvailable, flags);
         EXIT_ON_ERROR(hr)
 
-		if( bufferFrameCount > 0 )
-			printf( "read a new buffer of 1 second\n");
+//		if( bufferFrameCount > 0 )
+//			printf( "read a new buffer of 1 second\n");
     }
 
     hr = pAudioClient->Stop();  // Stop playing.
@@ -94,6 +98,5 @@ Exit:
     SAFE_RELEASE(pAudioClient)
     SAFE_RELEASE(pRenderClient)
 	CoUninitialize();
-
-//    return hr;
+	GlobalData.ThreadsAliveCount--;
 }

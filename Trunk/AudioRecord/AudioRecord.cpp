@@ -1,7 +1,5 @@
 #include "StdAfx.h"
 
-AudioBufferStore AudioStore;
-
 void RecordAudioStream( void *arg )
 {
     HRESULT hr;
@@ -52,7 +50,8 @@ void RecordAudioStream( void *arg )
     // Each loop fills about half of the shared buffer.
 	int LoopCounter = 0;
 	int ErrorCounter = 0;
-    while (bDone == FALSE)
+	GlobalData.ThreadsAliveCount++;
+	while( bDone == FALSE && GlobalData.ThreadIsRunning == 1 )
     {
         // Sleep for half the buffer duration.
 		// Calculate the actual duration of the allocated buffer.
@@ -85,7 +84,7 @@ void RecordAudioStream( void *arg )
             hr = pCaptureClient->GetNextPacketSize( &packetLength );
             EXIT_ON_ERROR(hr)
 
-			printf( "write a new buffer of x msecond. index %d Err %d size %d\n", LoopCounter++, ErrorCounter, numFramesAvailable );
+//			printf( "write a new buffer of x msecond. index %d Err %d size %d\n", LoopCounter++, ErrorCounter, numFramesAvailable );
         }
     }
 
@@ -100,5 +99,5 @@ Exit:
     SAFE_RELEASE(pCaptureClient)
 	CoUninitialize();
 
-//    return hr;
+	GlobalData.ThreadsAliveCount--;
 }

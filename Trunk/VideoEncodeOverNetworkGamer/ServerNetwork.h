@@ -19,6 +19,8 @@ public:
 	// accept new connections
     bool acceptNewClient();
 
+	void CloseConnections();
+
     // Socket to listen for new connections
     SOCKET ListenSocket;
 
@@ -36,3 +38,4 @@ public:
 	ShortTermDataUsageSampler NetworkUsageStat;
 };
 
+void StartWaitAcceptNewConnectionsThread( ServerNetwork *Listener );

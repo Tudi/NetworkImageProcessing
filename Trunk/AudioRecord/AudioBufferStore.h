@@ -28,6 +28,8 @@ public:
 	HRESULT SetReadFormat( WAVEFORMATEX *NewFormat );
 	HRESULT StoreData( unsigned char *Data, int FrameCount, DWORD Flags, int *done );
     HRESULT LoadData( int BufferFrameCount, BYTE *Data, DWORD *flags );
+	int	GetRequiredNetworkBufferSize();
+	int GetNetworkPacket( unsigned char *buff, int BuffSize );
 
 
 	unsigned char			*CircularBuffer;

@@ -197,6 +197,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DataSender.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DataSender.h"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>

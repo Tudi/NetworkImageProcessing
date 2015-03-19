@@ -2,6 +2,7 @@
 #include <process.h>
 
 GlobalStore GlobalData;
+AudioBufferStore AudioStore;
 
 void main()
 {
