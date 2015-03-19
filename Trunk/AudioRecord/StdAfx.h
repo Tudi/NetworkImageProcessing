@@ -13,8 +13,9 @@
 #include "AudioBufferStore.h"
 #include "../VideoEncodeOverNetworkGamer/GamerPCDefines.h"
 #include "../VideoEncodeOverNetworkGamer/Tools.h"
+#include "../VideoEncodeOverNetworkGamer/NetworkPackets.h"
 #include "../VideoEncodeOverNetworkGamer/ServerNetwork.h"
 
 #include "AudioRecord.h"
-#include "AudioPlayback.h"
+#include "../AudioPlayback/AudioPlayback.h"
 #include "DataSender.h"

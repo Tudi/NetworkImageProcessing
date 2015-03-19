@@ -16,8 +16,9 @@ public:
     // ctor/dtor
     ClientNetwork(char *IP, char *Port);
     ~ClientNetwork(void);
+	void CloseConnection();
 
-	int receivePackets(char *);
+//	int receivePackets(char *);
 	int ReceivePacketNonBlocking( char *, unsigned int );
 	int ReplyToSender(char *, int);
 

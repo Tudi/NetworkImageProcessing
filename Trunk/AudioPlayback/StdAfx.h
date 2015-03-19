@@ -11,9 +11,13 @@
 #include <mmdeviceapi.h>
 #include <list>
 #include <map>
+#include <process.h>
 
 #include "../VideoEncodeOverNetworkGamer/GamerPCDefines.h"
 #include "../AudioRecord/AudioBufferStore.h"
 #include "../VideoEncodeOverNetworkEncoder/ClientNetwork.h"
-#include "../AudioRecord/AudioPlayback.h"
-//#include "AudioPlayback.h"
+//#include "../AudioRecord/AudioPlayback.h"
+#include "AudioPlayback.h"
+#include "DataReader.h"
+
+extern AudioBufferStore	AudioStore;

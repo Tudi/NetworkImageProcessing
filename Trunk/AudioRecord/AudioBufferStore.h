@@ -28,17 +28,19 @@ public:
 	HRESULT SetReadFormat( WAVEFORMATEX *NewFormat );
 	HRESULT StoreData( unsigned char *Data, int FrameCount, DWORD Flags, int *done );
     HRESULT LoadData( int BufferFrameCount, BYTE *Data, DWORD *flags );
+	int GetAvailableFrames() { return (TotalBytesStored - TotalBytesRead); }
 	int	GetRequiredNetworkBufferSize();
 	int GetNetworkPacket( unsigned char *buff, int BuffSize );
-
+	void StoreData( unsigned char *Data, int ByteCount );
+	void StoreNetworkData( unsigned char *Data, int size );
 
 	unsigned char			*CircularBuffer;
 	int						WriteIndex;
 	int						ReadIndex;
 	int						CacheDuration;
 	int						CircularBufferSize;
-	long					TotalSamplesStored;
-	long					TotalSamplesRead;
+	long					TotalBytesStored;
+	long					TotalBytesRead;
 	WAVEFORMATEXTENSIBLE	wfxRead,wfxWrite;
 	int						DebugForceStopRecordSeconds;
 #ifdef SUPPORT_FOR_OS_AUDIO_CONVERSION

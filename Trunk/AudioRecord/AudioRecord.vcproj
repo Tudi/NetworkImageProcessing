@@ -181,14 +181,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\AudioPlayback.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\AudioPlayback.h"
-				>
-			</File>
-			<File
 				RelativePath=".\AudioRecord.cpp"
 				>
 			</File>
@@ -228,6 +220,14 @@
 		<Filter
 			Name="Source Files External"
 			>
+			<File
+				RelativePath="..\AudioPlayback\AudioPlayback.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\AudioPlayback\AudioPlayback.h"
+				>
+			</File>
 			<File
 				RelativePath="..\VideoEncodeOverNetworkGamer\GamerPCDefines.h"
 				>

@@ -107,14 +107,19 @@ ClientNetwork::ClientNetwork( char *IP, char *Port )
 
 ClientNetwork::~ClientNetwork(void)
 {
-	if( ConnectSocket != 0 )
-	{
-		closesocket(ConnectSocket);
-		WSACleanup();
-		ConnectSocket = 0;
-	}
+	CloseConnection();
 }
 
+void ClientNetwork::CloseConnection()
+{
+	if( ConnectSocket != INVALID_SOCKET )
+	{
+		closesocket( ConnectSocket );
+		WSACleanup();
+		ConnectSocket = INVALID_SOCKET;
+	}
+}
+/*
 int ClientNetwork::receivePackets(char *recvbuf) 
 {
 	iResult = recv( ConnectSocket, recvbuf, GlobalData.MaxPacketSize, 0 );
@@ -145,6 +150,7 @@ int ClientNetwork::receivePackets(char *recvbuf)
 
     return iResult;
 }
+*/
 
 int ClientNetwork::ReplyToSender( char *packets, int totalSize )
 {
@@ -169,13 +175,19 @@ TRY_MORE_READ_ON_LACK_OF_DATA:
 		if( WriteIndex == 0 )
 			iResult = recv( ConnectSocket, &recvbuf[WriteIndex], sizeof( NetworkPacketHeader ), 0 );
 		else
-			iResult = recv( ConnectSocket, &recvbuf[WriteIndex], RequiredRead - SumRead, 0 );
+		{
+			int SpaceLeftInOurBuffer = BufferSize - WriteIndex;
+			int RemainingToRead = RequiredRead - SumRead;
+			int ActualRead = RemainingToRead;
+			if( ActualRead > SpaceLeftInOurBuffer )
+				ActualRead = SpaceLeftInOurBuffer;
+			iResult = recv( ConnectSocket, &recvbuf[WriteIndex], ActualRead, 0 );
+		}
 
 		if ( iResult == 0 )
 		{
 			printf( "Connection closed\n" );
-			closesocket( ConnectSocket );
-			WSACleanup();
+			CloseConnection();
 	//		exit(1);
 			return iResult;
 		}
@@ -190,8 +202,7 @@ TRY_MORE_READ_ON_LACK_OF_DATA:
 //				return 0;
 			}
 			printf( "recv failed: %d - %d\n", iResult, iResult2 );
-			closesocket( ConnectSocket );
-			WSACleanup();
+			CloseConnection();
 	//		exit(1);
 			return iResult;
 		}
@@ -209,6 +220,6 @@ TRY_MORE_READ_ON_LACK_OF_DATA:
 		SumRead += iResult;
 //		unsigned int End = GetTimer();
 //		printf("network packet fragment size %d, received in %d seconds\n", iResult, End - Start );
-	}while( SumRead < RequiredRead && WriteIndex < GlobalData.MaxPacketSize );
+	}while( SumRead < RequiredRead && BufferSize - WriteIndex > 0 );
     return SumRead;
 }

@@ -2,8 +2,8 @@
 
 struct DataFeederThreadParam
 {
-	ServerNetwork *DataSender;
-	AudioBufferStore *Buffer;
+	ClientNetwork		*DataReader;
+	AudioBufferStore	*Buffer;
 };
 
 void SoundReadWriteDataThread( void *arg )
@@ -14,29 +14,19 @@ void SoundReadWriteDataThread( void *arg )
 	GlobalData.ThreadsAliveCount++;
 	while( GlobalData.ThreadIsRunning == 1 )
 	{
-		if( Param->DataSender->HasConnections() == 0 )
-		{
-			Sleep( 10 );
-			continue;
-		}
-		int CanSendNow = Param->Buffer->GetNetworkPacket( buff, MaxBuffSize );
-		if( CanSendNow == 0 )
-		{
-			Sleep( 10 );
-			continue;
-		}
-		printf( "Sending %d data\n", CanSendNow );
-		Param->DataSender->sendToAll( (char*)buff, CanSendNow );
+		int ReadCount = Param->DataReader->ReceivePacketNonBlocking( (char*)buff, MaxBuffSize );
+		Param->Buffer->StoreNetworkData( buff, ReadCount );
+		printf( "Received %d data\n", ReadCount );
 	}
 	GlobalData.ThreadsAliveCount--;
 	delete arg;
 	free( buff );
 }
 
-void StartDataFeederThread( ServerNetwork *DataSender, AudioBufferStore *Buffer )
+void StartDataFeederThread( ClientNetwork *DataSender, AudioBufferStore *Buffer )
 {
 	DataFeederThreadParam *Param = new DataFeederThreadParam;
 	Param->Buffer = Buffer;
-	Param->DataSender = DataSender;
+	Param->DataReader = DataSender;
 	_beginthread( SoundReadWriteDataThread, 0, (void*)Param );
 }

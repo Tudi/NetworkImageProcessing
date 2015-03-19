@@ -25,9 +25,9 @@ void main()
 	printf("Trying to send data over network\n");
 	StartDataFeederThread( NetworkSender, &AudioStore );
 
-	Sleep( 1000 );	//infinite echo incoming if tested on same PC
+//	Sleep( 1000 );	//infinite echo incoming if tested on same PC
 	printf("Started playback\n");
-	_beginthread( PlayAudioStream, 0, (void*)NULL );
+//	_beginthread( PlayAudioStream, 0, (void*)NULL );
 
 	printf("press any key to exit\n");
 	_getch();

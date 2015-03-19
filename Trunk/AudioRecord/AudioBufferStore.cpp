@@ -12,8 +12,8 @@ AudioBufferStore::AudioBufferStore( )
 	ReadIndex = 0;
 	CircularBuffer = NULL;
 	CacheDuration = AUDIO_SAMPLE_DURATION * 10;
-	TotalSamplesStored = 0;
-	TotalSamplesRead = 0;
+	TotalBytesStored = 0;
+	TotalBytesRead = 0;
 	CircularBufferSize = 0;
 	DebugForceStopRecordSeconds = 0;
 #ifdef SUPPORT_FOR_OS_AUDIO_CONVERSION
@@ -63,35 +63,44 @@ HRESULT AudioBufferStore::SetReadFormat( WAVEFORMATEX *NewFormat )
 	return S_OK;
 }
 
-HRESULT AudioBufferStore::StoreData( unsigned char *Data, int FrameCount, DWORD Flags, int *done )
+void AudioBufferStore::StoreData( unsigned char *Data, int ByteCount )
 {
-	int WriteBlockSize = wfxWrite.Format.nChannels * wfxWrite.Format.wBitsPerSample / 8;
-	int	TotalBufferSize = FrameCount * WriteBlockSize;
-
-	if( WriteIndex + TotalBufferSize <= CircularBufferSize )
+	if( ByteCount <= 0 || Data == NULL )
+		return;
+	if( WriteIndex + ByteCount <= CircularBufferSize )
 	{
-		memcpy( &CircularBuffer[WriteIndex], Data, TotalBufferSize );
-		WriteIndex += TotalBufferSize;
+		memcpy( &CircularBuffer[WriteIndex], Data, ByteCount );
+		WriteIndex += ByteCount;
 	}
 	else
 	{
 		int CanCopyToEnd = CircularBufferSize - WriteIndex;
 		if( CanCopyToEnd > 0 )
 			memcpy( &CircularBuffer[WriteIndex], &Data[0], CanCopyToEnd );
-		int CanCopyBeggining = TotalBufferSize - CanCopyToEnd;
+		int CanCopyBeggining = ByteCount - CanCopyToEnd;
+		if( CanCopyBeggining > CircularBufferSize )
+			CanCopyBeggining = CircularBufferSize;
 		if( CanCopyBeggining > 0 )
 			memcpy( &CircularBuffer[0], &Data[CanCopyToEnd], CanCopyBeggining );
 		WriteIndex = CanCopyBeggining;
 	}
 
-	TotalSamplesStored += TotalBufferSize;
+	TotalBytesStored += ByteCount;
+}
+
+HRESULT AudioBufferStore::StoreData( unsigned char *Data, int FrameCount, DWORD Flags, int *done )
+{
+	int	TotalBufferSize = FrameCount * wfxWrite.Format.nBlockAlign;
+
+	StoreData( Data, TotalBufferSize );
 
 	//just testing. Remove me later
-	if( DebugForceStopRecordSeconds != 0 && TotalSamplesStored > DebugForceStopRecordSeconds * (int)wfxWrite.Format.nAvgBytesPerSec )
+	if( DebugForceStopRecordSeconds != 0 && TotalBytesStored > DebugForceStopRecordSeconds * (int)wfxWrite.Format.nAvgBytesPerSec )
 		return E_FAIL;
 
 	return S_OK;
 }
+
 HRESULT AudioBufferStore::LoadData( int BufferFrameCount, BYTE *Data, DWORD *flags )
 {
 	*flags = 0;	// need to implement
@@ -100,13 +109,13 @@ HRESULT AudioBufferStore::LoadData( int BufferFrameCount, BYTE *Data, DWORD *fla
 	if( BufferFrameCount == 0 )
 		return S_OK;
 
-	int ReadBlockSize = wfxRead.Format.nChannels * wfxRead.Format.wBitsPerSample / 8;
-	int WriteBlockSize = wfxWrite.Format.nChannels * wfxWrite.Format.wBitsPerSample / 8;
+	int ReadBlockSize = wfxRead.Format.nBlockAlign;
+	int WriteBlockSize = wfxWrite.Format.nBlockAlign;
 	// need to convert sampling rate
 	float SamplingRateRatio = ( float )wfxWrite.Format.nSamplesPerSec / ( float ) wfxRead.Format.nSamplesPerSec;
 	int	TotalBufferSize = ( (int)( SamplingRateRatio * BufferFrameCount * WriteBlockSize ) * 4 + 3 ) / 4;
 
-	if( TotalSamplesRead + TotalBufferSize > TotalSamplesStored )
+	if( TotalBytesRead + TotalBufferSize > TotalBytesStored )
 		return E_FAIL;
 
 	int IsBothFloatFormat = 0;
@@ -203,7 +212,7 @@ HRESULT AudioBufferStore::LoadData( int BufferFrameCount, BYTE *Data, DWORD *fla
 	}
 	ReadIndex = ( ReadIndex + TotalBufferSize ) % CircularBufferSize;
 
-	TotalSamplesRead += TotalBufferSize;
+	TotalBytesRead += TotalBufferSize;
 
 	return S_OK;
 }
@@ -276,7 +285,7 @@ HRESULT AudioBufferStore::LoadData2( int BufferFrameCount, BYTE *Data, DWORD *fl
 //    count = fwrite( rawbuf, 1, ReadStreamHead.cbDstLengthUsed, fpOut );
 	}
 
-	TotalSamplesRead += TotalBufferSize;
+	TotalBytesRead += TotalBufferSize;
 
 	return S_OK;
 }
@@ -284,22 +293,29 @@ HRESULT AudioBufferStore::LoadData2( int BufferFrameCount, BYTE *Data, DWORD *fl
 
 int	AudioBufferStore::GetRequiredNetworkBufferSize() 
 {
-	return (TotalSamplesStored - TotalSamplesRead) * wfxWrite.Format.nBlockAlign + sizeof( WAVEFORMATEXTENSIBLE );
+	return (TotalBytesStored - TotalBytesRead) % CircularBufferSize + sizeof( WAVEFORMATEXTENSIBLE );
 }
 
 int AudioBufferStore::GetNetworkPacket( unsigned char *buff, int BuffSize )
 {
-	if( (TotalSamplesStored - TotalSamplesRead) <= 0 )
+	if( (TotalBytesStored - TotalBytesRead) <= 0 )
 		return 0;
 
-	int HeaderSize = sizeof( WAVEFORMATEXTENSIBLE );
+	int HeaderSize = sizeof( NetworkPacketHeader ) + sizeof( WAVEFORMATEXTENSIBLE );
 
-	int MaxBytesCanWrite = (TotalSamplesStored - TotalSamplesRead) * wfxWrite.Format.nBlockAlign;
+	if( TotalBytesStored - TotalBytesRead > CircularBufferSize )
+		TotalBytesRead = TotalBytesStored - CircularBufferSize;
+
+	int MaxBytesCanWrite = ( TotalBytesStored - TotalBytesRead );
 	if( BuffSize < MaxBytesCanWrite )
 		MaxBytesCanWrite = ( BuffSize - HeaderSize ) / wfxWrite.Format.nBlockAlign * wfxWrite.Format.nBlockAlign;
 
-	//write header
-	memcpy( &buff[0], &wfxWrite, HeaderSize );
+	//write headers
+	NetworkPacketHeader *NH = (NetworkPacketHeader *)&buff[0];
+	memset( NH, 0, sizeof( NetworkPacketHeader ) );
+	NH->PacketSize = HeaderSize + MaxBytesCanWrite;
+
+	memcpy( &buff[ sizeof( NetworkPacketHeader ) ], &wfxWrite, sizeof( WAVEFORMATEXTENSIBLE ) );
 
 	//write content
 	if( ReadIndex + MaxBytesCanWrite <= CircularBufferSize )
@@ -312,8 +328,23 @@ int AudioBufferStore::GetNetworkPacket( unsigned char *buff, int BuffSize )
 		if( CanCopyToEnd > 0 )
 			memcpy( &buff[HeaderSize], &CircularBuffer[ReadIndex], CanCopyToEnd );
 		int CanCopyBeggining = MaxBytesCanWrite - CanCopyToEnd;
+		if( CanCopyBeggining > CircularBufferSize )
+			CanCopyBeggining = CircularBufferSize;
 		if( CanCopyBeggining > 0 )
-			memcpy( &buff[CanCopyToEnd], &CircularBuffer[0], CanCopyBeggining );
+			memcpy( &buff[HeaderSize + CanCopyToEnd], &CircularBuffer[0], CanCopyBeggining );
 	} 
+
+	ReadIndex = ( ReadIndex + MaxBytesCanWrite ) % CircularBufferSize;
+	TotalBytesRead += MaxBytesCanWrite;
+
 	return ( HeaderSize + MaxBytesCanWrite );
+}
+
+void AudioBufferStore::StoreNetworkData( unsigned char *Data, int size )
+{
+	int HeaderSize = sizeof( NetworkPacketHeader ) + sizeof( WAVEFORMATEXTENSIBLE );
+	SetWriteFormat( (WAVEFORMATEX*) &Data[ sizeof( NetworkPacketHeader ) ] );
+	int DataSize = size - HeaderSize;
+	if( DataSize > 0 )
+		StoreData( &Data[HeaderSize], DataSize );
 }
