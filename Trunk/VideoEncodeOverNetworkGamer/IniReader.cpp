@@ -63,6 +63,22 @@ void ConvertLineToParam( char *Line )
 			else
 				GlobalData.ColorFilterMask = 0;
 		}
+		else if( strstr( Line, "VideoCapturePCIP" ) )
+			GlobalData.VideoNetworkIP = _strdup( StrValue );
+		else if( strstr( Line, "VideoCapturePCPort" ) )
+			GlobalData.VideoNetworkPort = _strdup( StrValue );
+		else if( strstr( Line, "AudioCapturePCIP" ) )
+			GlobalData.AudioNetworkIP = _strdup( StrValue );
+		else if( strstr( Line, "AudioCapturePCPort" ) )
+			GlobalData.AudioNetworkPort = _strdup( StrValue );
+//		else if( strstr( Line, "FPSLimit" ) )
+//			GlobalData.FPSLimit = atoi( StrValue );
+//		else if( strstr( Line, "MaxNetworkPacketSize" ) )
+//			GlobalData.MaxPacketSize = atoi( StrValue );
+		else if( strstr( Line, "ShowStatistics" ) )
+			GlobalData.ShowStatistics = atoi( StrValue );
+		else if( strstr( Line, "ForcedAudioLatency" ) )
+			GlobalData.ForcedAudioLatency = atoi( StrValue );
 	}
 }
 

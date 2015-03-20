@@ -16,7 +16,7 @@
 #include "../VideoEncodeOverNetworkGamer/GamerPCDefines.h"
 #include "../AudioRecord/AudioBufferStore.h"
 #include "../VideoEncodeOverNetworkEncoder/ClientNetwork.h"
-#include "../VideoEncodeOverNetworkEncoder/IniReader.h"
+#include "../VideoEncodeOverNetworkGamer/IniReader.h"
 //#include "../AudioRecord/AudioPlayback.h"
 #include "AudioPlayback.h"
 #include "DataReader.h"

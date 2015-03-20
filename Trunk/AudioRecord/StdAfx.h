@@ -20,3 +20,4 @@
 #include "AudioRecord.h"
 #include "../AudioPlayback/AudioPlayback.h"
 #include "DataSender.h"
+#include "AudioDataProcessing.h"

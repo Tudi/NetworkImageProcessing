@@ -23,7 +23,7 @@
 
 #include "../VideoEncodeOverNetworkGamer/NetworkPackets.h"
 #include "../VideoEncodeOverNetworkGamer/GamerPCDefines.h"
-#include "IniReader.h"
+#include "../VideoEncodeOverNetworkGamer/IniReader.h"
 #include "../VideoEncodeOverNetworkGamer/PreciseTimer.h"
 #include "../VideoEncodeOverNetworkGamer/zlib.h"
 #include "ClientNetwork.h"

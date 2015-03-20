@@ -59,7 +59,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="User32.lib Ws2_32.lib Gdi32.lib ../VideoEncodeOverNetworkGamer/zlib_d.lib ../VideoEncodeOverNetworkGamer/DebugLib/VideoEncodeOverNetworkGamer.lib $(NOINHERIT)"
+				AdditionalDependencies="User32.lib Ws2_32.lib Gdi32.lib ../VideoEncodeOverNetworkGamer/zlib_d.lib ../VideoEncodeOverNetworkGamer/DebugLib/VideoEncodeOverNetworkGamer.lib ../AudioRecord/DebugLib/AudioRecord.lib $(NOINHERIT)"
 				LinkIncremental="2"
 				ForceSymbolReferences="__DllMainCRTStartup@12"
 				GenerateDebugInformation="true"
@@ -133,7 +133,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="User32.lib Ws2_32.lib Gdi32.lib ../VideoEncodeOverNetworkGamer/zlib.lib ../VideoEncodeOverNetworkGamer/ReleaseLib/VideoEncodeOverNetworkGamer.lib $(NOINHERIT)"
+				AdditionalDependencies="User32.lib Ws2_32.lib Gdi32.lib ../VideoEncodeOverNetworkGamer/zlib.lib ../VideoEncodeOverNetworkGamer/ReleaseLib/VideoEncodeOverNetworkGamer.lib ../AudioRecord/ReleaseLib/AudioRecord.lib $(NOINHERIT)"
 				LinkIncremental="1"
 				ForceSymbolReferences="__DllMainCRTStartup@12"
 				GenerateDebugInformation="true"
@@ -268,7 +268,19 @@
 			Name="Source Files GamerPC"
 			>
 			<File
+				RelativePath="..\AudioRecord\AudioDataProcessing.h"
+				>
+			</File>
+			<File
 				RelativePath="..\VideoEncodeOverNetworkGamer\DataProcessing.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\IniReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\IniReader.h"
 				>
 			</File>
 		</Filter>

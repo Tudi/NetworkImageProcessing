@@ -181,14 +181,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\IniReader.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\IniReader.h"
-				>
-			</File>
-			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -262,6 +254,14 @@
 			>
 			<File
 				RelativePath="..\VideoEncodeOverNetworkGamer\GamerPCDefines.h"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\IniReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\IniReader.h"
 				>
 			</File>
 			<File

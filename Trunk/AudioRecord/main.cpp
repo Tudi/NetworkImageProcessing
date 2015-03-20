@@ -3,27 +3,13 @@
 
 GlobalStore GlobalData;
 
-AudioBufferStore AudioStore;
-
 void main()
 {
 	LoadSettingsFromFile( "../VideoEncodeOverNetworkGamer/Config.txt" );
 
-	AudioStore.SetCacheDuration( 10 );
-//	AudioStore.DebugForceStopRecordSeconds = 20;
+	AudioInitDataProcessing();
 
-	ServerNetwork *NetworkSender = new ServerNetwork( GlobalData.AudioNetworkIP, GlobalData.AudioNetworkPort );
-
-	GlobalData.ThreadIsRunning = 1;
-
-	printf("Waiting for connections\n");
-	StartWaitAcceptNewConnectionsThread( NetworkSender );
-
-	printf("Started record\n");
-	_beginthread( RecordAudioStream, 0, (void*)NULL );
-
-	printf("Trying to send data over network\n");
-	StartDataFeederThread( NetworkSender, &AudioStore );
+	AudioStartDataProcessing();
 
 //	Sleep( 1000 );	//infinite echo incoming if tested on same PC
 //	printf("Started playback\n");
@@ -31,18 +17,8 @@ void main()
 
 	printf("press any key to exit\n");
 	_getch();
-	GlobalData.ThreadIsRunning = 2;
-	NetworkSender->CloseConnections();
-	Sleep( 100 );
 
-	int AntiDeadLock = 10;
-	while( GlobalData.ThreadsAliveCount > 0 && AntiDeadLock > 0 )
-	{
-		Sleep( 1000 );
-		AntiDeadLock--;
-	}
+	AudioShutDownAllDataProcessing( 1 );
 
 	printf("Done record / send / playback\n");
-
-	delete NetworkSender;
 }

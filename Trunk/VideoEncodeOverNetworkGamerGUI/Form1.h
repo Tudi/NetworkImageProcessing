@@ -30,9 +30,12 @@ namespace VideoEncodeOverNetworkGamerGUI {
 	private: System::Windows::Forms::Label^  FC_L_ForcedWidth;
 	private: System::Windows::Forms::TextBox^  FC_E_ForceHeight;
 	private: System::Windows::Forms::Label^  FC_L_ForceHeight;
-
-		float				TargetWindowAspectRatio;
-		BackgroundWorker	^m_oWorker;
+	private: System::Windows::Forms::CheckBox^  FC_C_AudioEnable;
+	private: System::Windows::Forms::Label^  FC_L_AudioEnable;
+	private: System::Windows::Forms::TextBox^  FC_E_AudioPort;
+	private: System::Windows::Forms::Label^  FC_L_AudioPort;
+	float				TargetWindowAspectRatio;
+	BackgroundWorker	^m_oWorker;
 public: 
 		Form1(void)
 		{
@@ -47,11 +50,17 @@ public:
             m_oWorker->WorkerReportsProgress = true;
             m_oWorker->WorkerSupportsCancellation = true;
 
+			System::EventArgs ^NoArgs;
+			FC_B_WindowRefresh_Click( nullptr, NoArgs );
+
+//			LoadSettingsFromFile( "Config.txt" );
+
 			this->FC_D_Resize->SelectedIndex = 1;
 			this->FC_D_BPP->SelectedIndex = 2;
 			this->FC_D_Compress->SelectedIndex = 4;
 
 			TargetWindowAspectRatio = 640.0f / 480.0f;
+
 		}
 
 //        void m_oWorker_RunWorkerCompleted(Object ^sender, RunWorkerCompletedEventArgs ^e){}
@@ -217,6 +226,10 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			this->FC_L_ForcedWidth = (gcnew System::Windows::Forms::Label());
 			this->FC_E_ForceHeight = (gcnew System::Windows::Forms::TextBox());
 			this->FC_L_ForceHeight = (gcnew System::Windows::Forms::Label());
+			this->FC_C_AudioEnable = (gcnew System::Windows::Forms::CheckBox());
+			this->FC_L_AudioEnable = (gcnew System::Windows::Forms::Label());
+			this->FC_E_AudioPort = (gcnew System::Windows::Forms::TextBox());
+			this->FC_L_AudioPort = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// FC_D_WindowName
@@ -346,7 +359,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			// FC_L_Stat_FPS0
 			// 
 			this->FC_L_Stat_FPS0->AutoSize = true;
-			this->FC_L_Stat_FPS0->Location = System::Drawing::Point(1, 380);
+			this->FC_L_Stat_FPS0->Location = System::Drawing::Point(1, 430);
 			this->FC_L_Stat_FPS0->Name = L"FC_L_Stat_FPS0";
 			this->FC_L_Stat_FPS0->Size = System::Drawing::Size(59, 13);
 			this->FC_L_Stat_FPS0->TabIndex = 16;
@@ -355,7 +368,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			// FC_L_Stat_FPS1
 			// 
 			this->FC_L_Stat_FPS1->AutoSize = true;
-			this->FC_L_Stat_FPS1->Location = System::Drawing::Point(128, 380);
+			this->FC_L_Stat_FPS1->Location = System::Drawing::Point(128, 430);
 			this->FC_L_Stat_FPS1->Name = L"FC_L_Stat_FPS1";
 			this->FC_L_Stat_FPS1->Size = System::Drawing::Size(13, 13);
 			this->FC_L_Stat_FPS1->TabIndex = 17;
@@ -364,7 +377,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			// FC_L_Stat_BW0
 			// 
 			this->FC_L_Stat_BW0->AutoSize = true;
-			this->FC_L_Stat_BW0->Location = System::Drawing::Point(1, 402);
+			this->FC_L_Stat_BW0->Location = System::Drawing::Point(1, 452);
 			this->FC_L_Stat_BW0->Name = L"FC_L_Stat_BW0";
 			this->FC_L_Stat_BW0->Size = System::Drawing::Size(79, 13);
 			this->FC_L_Stat_BW0->TabIndex = 18;
@@ -373,7 +386,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			// FC_L_Stat_BW1
 			// 
 			this->FC_L_Stat_BW1->AutoSize = true;
-			this->FC_L_Stat_BW1->Location = System::Drawing::Point(128, 402);
+			this->FC_L_Stat_BW1->Location = System::Drawing::Point(128, 452);
 			this->FC_L_Stat_BW1->Name = L"FC_L_Stat_BW1";
 			this->FC_L_Stat_BW1->Size = System::Drawing::Size(13, 13);
 			this->FC_L_Stat_BW1->TabIndex = 19;
@@ -381,7 +394,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			// 
 			// FC_B_Apply
 			// 
-			this->FC_B_Apply->Location = System::Drawing::Point(94, 447);
+			this->FC_B_Apply->Location = System::Drawing::Point(94, 497);
 			this->FC_B_Apply->Name = L"FC_B_Apply";
 			this->FC_B_Apply->Size = System::Drawing::Size(97, 27);
 			this->FC_B_Apply->TabIndex = 20;
@@ -446,7 +459,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			// FC_L_CPU0
 			// 
 			this->FC_L_CPU0->AutoSize = true;
-			this->FC_L_CPU0->Location = System::Drawing::Point(1, 424);
+			this->FC_L_CPU0->Location = System::Drawing::Point(1, 474);
 			this->FC_L_CPU0->Name = L"FC_L_CPU0";
 			this->FC_L_CPU0->Size = System::Drawing::Size(61, 13);
 			this->FC_L_CPU0->TabIndex = 27;
@@ -455,7 +468,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			// FC_L_Stat_CPU1
 			// 
 			this->FC_L_Stat_CPU1->AutoSize = true;
-			this->FC_L_Stat_CPU1->Location = System::Drawing::Point(128, 424);
+			this->FC_L_Stat_CPU1->Location = System::Drawing::Point(128, 474);
 			this->FC_L_Stat_CPU1->Name = L"FC_L_Stat_CPU1";
 			this->FC_L_Stat_CPU1->Size = System::Drawing::Size(13, 13);
 			this->FC_L_Stat_CPU1->TabIndex = 28;
@@ -556,11 +569,52 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			this->FC_L_ForceHeight->TabIndex = 39;
 			this->FC_L_ForceHeight->Text = L"Custom Height";
 			// 
+			// FC_C_AudioEnable
+			// 
+			this->FC_C_AudioEnable->AutoSize = true;
+			this->FC_C_AudioEnable->Checked = true;
+			this->FC_C_AudioEnable->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->FC_C_AudioEnable->Location = System::Drawing::Point(131, 381);
+			this->FC_C_AudioEnable->Name = L"FC_C_AudioEnable";
+			this->FC_C_AudioEnable->Size = System::Drawing::Size(15, 14);
+			this->FC_C_AudioEnable->TabIndex = 40;
+			this->FC_C_AudioEnable->UseVisualStyleBackColor = true;
+			// 
+			// FC_L_AudioEnable
+			// 
+			this->FC_L_AudioEnable->AutoSize = true;
+			this->FC_L_AudioEnable->Location = System::Drawing::Point(1, 382);
+			this->FC_L_AudioEnable->Name = L"FC_L_AudioEnable";
+			this->FC_L_AudioEnable->Size = System::Drawing::Size(70, 13);
+			this->FC_L_AudioEnable->TabIndex = 41;
+			this->FC_L_AudioEnable->Text = L"Stream Audio";
+			// 
+			// FC_E_AudioPort
+			// 
+			this->FC_E_AudioPort->Location = System::Drawing::Point(131, 401);
+			this->FC_E_AudioPort->Name = L"FC_E_AudioPort";
+			this->FC_E_AudioPort->Size = System::Drawing::Size(121, 20);
+			this->FC_E_AudioPort->TabIndex = 42;
+			this->FC_E_AudioPort->Text = L"6889";
+			// 
+			// FC_L_AudioPort
+			// 
+			this->FC_L_AudioPort->AutoSize = true;
+			this->FC_L_AudioPort->Location = System::Drawing::Point(1, 404);
+			this->FC_L_AudioPort->Name = L"FC_L_AudioPort";
+			this->FC_L_AudioPort->Size = System::Drawing::Size(56, 13);
+			this->FC_L_AudioPort->TabIndex = 43;
+			this->FC_L_AudioPort->Text = L"Audio Port";
+			// 
 			// Form1
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(324, 477);
+			this->ClientSize = System::Drawing::Size(324, 527);
+			this->Controls->Add(this->FC_L_AudioPort);
+			this->Controls->Add(this->FC_E_AudioPort);
+			this->Controls->Add(this->FC_L_AudioEnable);
+			this->Controls->Add(this->FC_C_AudioEnable);
 			this->Controls->Add(this->FC_L_ForceHeight);
 			this->Controls->Add(this->FC_E_ForceHeight);
 			this->Controls->Add(this->FC_L_ForcedWidth);
@@ -612,6 +666,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 //		MessageBoxW(NULL, L"Error msg", L"Error", MB_OK );
 
 		ShutDownAllDataProcessing();
+		AudioShutDownAllDataProcessing();
 
 		char *stringPointer = (char*) Marshal::StringToHGlobalAnsi( this->FC_D_WindowName->Text ).ToPointer();
 		GlobalData.WindowName = _strdup( stringPointer );	//this can be anything and it's ok even if it is null. We will capture desktop
@@ -685,6 +740,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			GlobalData.FPSLimit = 15;
 
 		stringPointer = (char*) Marshal::StringToHGlobalAnsi( this->FC_E_Port->Text ).ToPointer();
+		GlobalData.VideoNetworkPort = _strdup( stringPointer );
 		if( GlobalData.VideoNetworkPort == NULL )
 		{
 			this->FC_E_Port->ReadOnly = true;
@@ -693,20 +749,33 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 //			TimerCallback^ tcb = gcnew TimerCallback( statusChecker, &StatusChecker::CheckStatus);
 			m_oWorker->RunWorkerAsync();
 		}
-		GlobalData.VideoNetworkPort = _strdup( stringPointer );
 
 		if( this->FC_C_BorderIncl->Checked )
 			GlobalData.IncludeWindowBorder = 1;
 		else
 			GlobalData.IncludeWindowBorder = 0;
 
+		if( this->FC_C_AudioEnable->Checked )
+		{
+			stringPointer = (char*) Marshal::StringToHGlobalAnsi( this->FC_E_AudioPort->Text ).ToPointer();
+			GlobalData.AudioNetworkPort = _strdup( stringPointer );
+		}
+		else
+		{
+			GlobalData.AudioNetworkIP = NULL;
+			GlobalData.AudioNetworkPort = NULL;
+		}
+
 		InitDataProcessing();
+		AudioInitDataProcessing();
+
 		StartDataProcessing();
+		AudioStartDataProcessing();
 	}
 
 	private: System::Void FC_B_WindowRefresh_Click(System::Object^  sender, System::EventArgs^  e) 
 	{
-		this->FC_D_WindowName->Items->Clear();
+		FC_D_WindowName->Items->Clear();
 		FC_D_WindowName->Items->Add( "Desktop" );
 		FC_D_WindowName->SelectedIndex = 0;
 		ProcessNameList ProcessList;

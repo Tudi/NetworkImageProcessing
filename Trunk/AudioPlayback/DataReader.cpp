@@ -12,11 +12,12 @@ void SoundReadWriteDataThread( void *arg )
 	int MaxBuffSize = 10 * 64000 * 5 * 4;	//10 seconds, 5 channel, float format, 64khz buffer. i'm expecting 0.10 seconds to be used
 	unsigned char *buff = (unsigned char *)malloc( MaxBuffSize );
 	GlobalData.ThreadsAliveCount++;
+	int PacketCounter = 0;
 	while( GlobalData.ThreadIsRunning == 1 )
 	{
 		int ReadCount = Param->DataReader->ReceivePacketNonBlocking( (char*)buff, MaxBuffSize );
 		Param->Buffer->StoreNetworkData( buff, ReadCount );
-//		printf( "Received %d data\n", ReadCount );
+		printf( "%d) Received %d data\n", PacketCounter++, ReadCount );
 	}
 	GlobalData.ThreadsAliveCount--;
 	delete arg;

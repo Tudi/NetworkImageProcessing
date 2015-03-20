@@ -12,5 +12,7 @@
 #include "../VideoEncodeOverNetworkGamer/GamerPCDefines.h"
 #include "../VideoEncodeOverNetworkGamer/Tools.h"
 #include "../VideoEncodeOverNetworkGamer/DataProcessing.h"
+#include "../VideoEncodeOverNetworkGamer/IniReader.h"
+#include "../AudioRecord/AudioDataProcessing.h"
 
 #include "DataSender.h"

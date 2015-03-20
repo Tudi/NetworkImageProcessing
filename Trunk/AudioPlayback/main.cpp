@@ -33,6 +33,7 @@ void main()
 	}
 	if( AudioStore.GetAvailableFrames() > 0 )
 	{
+		printf("Received initial packets. Forcing latency %d \n", GlobalData.ForcedAudioLatency);
 		Sleep( GlobalData.ForcedAudioLatency );	//to be able to make it echo echo echo echo
 		_beginthread( PlayAudioStream, 0, (void*)NULL );
 	}

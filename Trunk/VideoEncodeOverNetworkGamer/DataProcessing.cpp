@@ -196,6 +196,13 @@ void ScreenCaptureAndSendThread( void *arg )
 	GlobalData.ThreadIsRunning = 1;
 	while( GlobalData.ThreadIsRunning == 1 )
 	{
+		//nothing to do right now
+		if( NetworkListener->HasConnections() == 0 )
+		{
+			Sleep( 10 );
+			continue;
+		}
+
 		unsigned int Start = GetTimer();
 		unsigned int End, ClsEnd, EndCapture,EndResize,EndCompress,EndNetwork,EndLoop;
 		End = Start;
@@ -392,9 +399,6 @@ void StartDataProcessing()
 
 	_beginthread( ListenAndAcceptNewClients, 0, (void*)NULL );
 
-	while( GlobalData.ThreadIsRunning == 1 && NetworkListener->HasConnections() == 0 )
-		Sleep( 100 );
-
-	if( GlobalData.ThreadIsRunning == 1 && NetworkListener->HasConnections() > 0 )
+	if( GlobalData.ThreadIsRunning == 1 )
 		_beginthread( ScreenCaptureAndSendThread, 0, (void*)NULL );
 }

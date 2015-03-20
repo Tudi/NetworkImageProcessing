@@ -123,7 +123,7 @@ void ListenAndPaint( void *arg )
 //	return;
 
 	FILE *fp;
-	fp=freopen( "Debug.txt", "w" ,stdout );
+	errno_t err = freopen_s( &fp, "Debug.txt", "w" ,stdout );
 	if( fp == NULL ) 
 	{
 		printf("Cannot open file.\n");
