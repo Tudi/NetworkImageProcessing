@@ -50,17 +50,15 @@ public:
             m_oWorker->WorkerReportsProgress = true;
             m_oWorker->WorkerSupportsCancellation = true;
 
-			System::EventArgs ^NoArgs;
-			FC_B_WindowRefresh_Click( nullptr, NoArgs );
-
-//			LoadSettingsFromFile( "Config.txt" );
-
 			this->FC_D_Resize->SelectedIndex = 1;
 			this->FC_D_BPP->SelectedIndex = 2;
 			this->FC_D_Compress->SelectedIndex = 4;
 
 			TargetWindowAspectRatio = 640.0f / 480.0f;
+			System::EventArgs ^NoArgs;
+			FC_B_WindowRefresh_Click( nullptr, NoArgs );
 
+//			LoadSettingsFromFile( "Config.txt" );
 		}
 
 //        void m_oWorker_RunWorkerCompleted(Object ^sender, RunWorkerCompletedEventArgs ^e){}
@@ -740,7 +738,6 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			GlobalData.FPSLimit = 15;
 
 		stringPointer = (char*) Marshal::StringToHGlobalAnsi( this->FC_E_Port->Text ).ToPointer();
-		GlobalData.VideoNetworkPort = _strdup( stringPointer );
 		if( GlobalData.VideoNetworkPort == NULL )
 		{
 			this->FC_E_Port->ReadOnly = true;
@@ -749,6 +746,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 //			TimerCallback^ tcb = gcnew TimerCallback( statusChecker, &StatusChecker::CheckStatus);
 			m_oWorker->RunWorkerAsync();
 		}
+		GlobalData.VideoNetworkPort = _strdup( stringPointer );
 
 		if( this->FC_C_BorderIncl->Checked )
 			GlobalData.IncludeWindowBorder = 1;
