@@ -2,7 +2,7 @@
 FPSLimit=20
 
 @ The IP of the PC you will use to play the game
-VideoCapturePCIP=192.168.2.21
+VideoCapturePCIP=127.0.0.1
 VideoCapturePCPort=6888
 
 @ Only valid for audio transfer program

@@ -8,6 +8,7 @@
 
 ServerNetwork		*AudioNetworkListener = NULL;
 AudioBufferStore	AudioStore;
+int					AudioIsListeningToNewConnections = 0;
 
 int InitAudioProcessing()
 {
@@ -56,6 +57,9 @@ void AudioListenAndAcceptNewClients( void *arg )
 {
 	if( AudioNetworkListener == NULL )
 		return;
+	if( AudioIsListeningToNewConnections != 0 )
+		return;
+	AudioIsListeningToNewConnections = 1;
 	printf("Waiting for client connection\n");
 	while( GlobalData.ThreadIsRunning == 1 && AudioNetworkListener != NULL )
 	{
@@ -66,9 +70,10 @@ void AudioListenAndAcceptNewClients( void *arg )
 			break;
 		}
 	}
+	AudioIsListeningToNewConnections = 0;
 }
 
-void AudioStartDataProcessing()
+void AudioStartDataProcessingWithAutoRestart( void *arg )
 {
 	if( AudioNetworkListener == NULL || GlobalData.AudioNetworkPort == NULL )
 		return;
@@ -88,4 +93,9 @@ void AudioStartDataProcessing()
 //		printf("Trying to send data over network\n");
 		StartDataFeederThread( AudioNetworkListener, &AudioStore );
 	}
+}
+
+void AudioStartDataProcessing()
+{
+	_beginthread( AudioStartDataProcessingWithAutoRestart, 0, (void*)NULL );
 }

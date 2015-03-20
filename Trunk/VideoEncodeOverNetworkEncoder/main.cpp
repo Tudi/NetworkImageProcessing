@@ -123,7 +123,7 @@ void ListenAndPaint( void *arg )
 //	return;
 
 	FILE *fp;
-	errno_t err = freopen_s( &fp, "Debug.txt", "w" ,stdout );
+	errno_t err = freopen_s( &fp, "Debug.txt", "wt" ,stdout );
 	if( fp == NULL ) 
 	{
 		printf("Cannot open file.\n");
@@ -139,6 +139,12 @@ void ListenAndPaint( void *arg )
 	unsigned int		ZlibBufferSize;
 
 	ClientNetwork NetworkListener( GlobalData.VideoNetworkIP, GlobalData.VideoNetworkPort );
+
+	if( NetworkListener.ConnectSocket == INVALID_SOCKET )
+	{
+		fclose( fp );
+		return;
+	}
 
 	//do we have a source window or a desktop ?
 	int SrcWidth, SrcHeight;
@@ -293,6 +299,8 @@ void ListenAndPaint( void *arg )
 	if( zlib_stream.state != Z_NULL && inflateEnd(&zlib_stream) != Z_OK )
 		assert( false );
 
+	if( fp )
+		fclose( fp );
 	NetworkListener.CloseConnection();
 }
 
@@ -309,11 +317,24 @@ void ListenAndPaintSelfRestart( void *arg )
 	exit(0);
 }
 
-void MyMain()
+void ListenAndSoundSelfRestart( void *arg )
+{
+	while( GlobalData.ThreadIsRunning == 1 )
+	{
+		ReadAndRenderSoundUntilNetwork( NULL );
+		Sleep( 100 );
+	}
+	GlobalData.ThreadIsRunning = 2;
+}
+
+void MyMain( HWND MainWindow )
 {
 	//load the settings from the ini file
 	LoadSettingsFromFile( "Config.txt" );
+	GlobalData.WndSrc = MainWindow;
 
-	_beginthread( ListenAndPaint, 0, (void*)NULL);
+	GlobalData.ThreadIsRunning = 1;
+	_beginthread( ListenAndPaintSelfRestart, 0, (void*)NULL);
+	_beginthread( ListenAndSoundSelfRestart, 0, (void*)NULL);
 
 }

@@ -342,6 +342,8 @@ int AudioBufferStore::GetNetworkPacket( unsigned char *buff, int BuffSize )
 
 void AudioBufferStore::StoreNetworkData( unsigned char *Data, int size )
 {
+	if( size <= 0 )
+		return;
 	int HeaderSize = sizeof( NetworkPacketHeader ) + sizeof( WAVEFORMATEXTENSIBLE );
 	SetWriteFormat( (WAVEFORMATEX*) &Data[ sizeof( NetworkPacketHeader ) ] );
 	int DataSize = size - HeaderSize;

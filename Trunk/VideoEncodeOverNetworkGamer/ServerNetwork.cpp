@@ -38,8 +38,8 @@ ServerNetwork::ServerNetwork(char *IP, char *Port)
     if ( iResult != 0 ) 
 	{
         printf("getaddrinfo failed with error: %d\n", iResult);
-        WSACleanup();
-        exit(1);
+		CloseConnections();
+		return;
     }
 
     // Create a SOCKET for connecting to server
@@ -49,8 +49,8 @@ ServerNetwork::ServerNetwork(char *IP, char *Port)
 	{
         printf("socket failed with error: %ld\n", WSAGetLastError());
         freeaddrinfo(result);
-        WSACleanup();
-        exit(1);
+		CloseConnections();
+		return;
     }
 
 	MaxSocketBufferSize = 1 * 65535;
@@ -84,9 +84,8 @@ ServerNetwork::ServerNetwork(char *IP, char *Port)
 	{
         printf("bind failed with error: %d\n", WSAGetLastError());
         freeaddrinfo(result);
-        closesocket(ListenSocket);
-        WSACleanup();
-        exit(1);
+		CloseConnections();
+		return;
     }
 
     // no longer need address information
@@ -98,9 +97,7 @@ ServerNetwork::ServerNetwork(char *IP, char *Port)
     if (iResult == SOCKET_ERROR) 
 	{
         printf("listen failed with error: %d\n", WSAGetLastError());
-        closesocket(ListenSocket);
-        WSACleanup();
-        exit(1);
+		CloseConnections();
     }
 }
 
@@ -119,6 +116,7 @@ void ServerNetwork::CloseConnections()
 	ListenSocket = INVALID_SOCKET;
     if (iResult == SOCKET_ERROR) 
         printf("closesocket function failed with error %d\n", WSAGetLastError());
+	WSACleanup();
 }
 
 // accept new connections
@@ -141,9 +139,7 @@ bool ServerNetwork::acceptNewClient()
         return true;
     }
 
-	//we only accept 1 client ?
-	closesocket( ListenSocket );
-	ListenSocket = INVALID_SOCKET;
+	CloseConnections();
 
     return false;
 }

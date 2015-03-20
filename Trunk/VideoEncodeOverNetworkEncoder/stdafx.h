@@ -27,8 +27,9 @@
 #include "../VideoEncodeOverNetworkGamer/PreciseTimer.h"
 #include "../VideoEncodeOverNetworkGamer/zlib.h"
 #include "ClientNetwork.h"
+#include "../AudioPlayback/AudioDataProcessing.h"
 
-void MyMain();
+void MyMain( HWND MainWindow );
 
 extern GlobalStore GlobalData;
 

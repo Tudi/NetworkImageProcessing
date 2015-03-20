@@ -60,7 +60,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="../VideoEncodeOverNetworkGamer/zlib_d.lib"
+				AdditionalDependencies="../VideoEncodeOverNetworkGamer/zlib_d.lib ../AudioPlayback/DebugLib/AudioPlayback.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -252,6 +252,10 @@
 		<Filter
 			Name="Source Files Shared"
 			>
+			<File
+				RelativePath="..\AudioPlayback\AudioDataProcessing.h"
+				>
+			</File>
 			<File
 				RelativePath="..\VideoEncodeOverNetworkGamer\GamerPCDefines.h"
 				>

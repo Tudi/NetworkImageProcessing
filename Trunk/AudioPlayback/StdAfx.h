@@ -20,5 +20,6 @@
 //#include "../AudioRecord/AudioPlayback.h"
 #include "AudioPlayback.h"
 #include "DataReader.h"
+#include "AudioDataProcessing.h"
 
 extern AudioBufferStore	AudioStore;

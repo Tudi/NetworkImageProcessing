@@ -6,7 +6,8 @@
 
 #define SHOW_STATS_EVERY_N_FRAMES	32
 
-ServerNetwork *NetworkListener = NULL;
+ServerNetwork	*NetworkListener = NULL;
+int				IsListeningToNewConnections = 0;
 
 int InitVideoProcessing()
 {
@@ -35,6 +36,10 @@ void ShutDownAllDataProcessing( int ShutdownNetwork )
 	//wait for worker thread to exit
 	if( GlobalData.ThreadIsRunning != 0 )
 		GlobalData.ThreadIsRunning = 2;
+
+	if( ShutdownNetwork != 0 && NetworkListener != NULL )
+		NetworkListener->CloseConnections();
+
 	int AntiDeadlock = 10;
 	while( GlobalData.ThreadIsRunning != 0 && AntiDeadlock > 0 )
 	{
@@ -197,7 +202,7 @@ void ScreenCaptureAndSendThread( void *arg )
 	while( GlobalData.ThreadIsRunning == 1 )
 	{
 		//nothing to do right now
-		if( NetworkListener->HasConnections() == 0 )
+		if( NetworkListener->HasConnections() == 0 && GlobalData.ThreadIsRunning == 1 )
 		{
 			Sleep( 10 );
 			continue;
@@ -288,8 +293,9 @@ void ScreenCaptureAndSendThread( void *arg )
 //			printf( "Network : Waiting for clients to connect\n" );
 //			NetworkListener->acceptNewClient();
 //			break;
-			while( GlobalData.ThreadIsRunning == 1 && NetworkListener->HasConnections() == 0 )
-				Sleep( 100 );
+//			while( GlobalData.ThreadIsRunning == 1 && NetworkListener->HasConnections() == 0 )
+//				Sleep( 100 );
+			continue;
 		}
 		else
 		{
@@ -378,6 +384,9 @@ void ListenAndAcceptNewClients( void *arg )
 {
 	if( NetworkListener == NULL )
 		return;
+	if( IsListeningToNewConnections != 0 )
+		return;
+	IsListeningToNewConnections = 1;
 	printf("Waiting for client connection\n");
 	while( GlobalData.ThreadIsRunning == 1 && NetworkListener != NULL )
 	{
@@ -388,6 +397,7 @@ void ListenAndAcceptNewClients( void *arg )
 			break;
 		}
 	}
+	IsListeningToNewConnections = 0;
 }
 
 void StartDataProcessing()

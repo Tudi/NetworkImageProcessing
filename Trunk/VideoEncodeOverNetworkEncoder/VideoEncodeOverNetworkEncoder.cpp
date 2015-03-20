@@ -44,7 +44,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_VIDEOENCODEOVERNETWORKENCODER));
 
-	MyMain();
+	MyMain( GlobalData.WndSrc );
 
 	// Main message loop:
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -181,9 +181,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EndPaint(hWnd, &ps);
 		break;
 	case WM_DESTROY:
+	{
 		GlobalData.ThreadIsRunning = 0;
+		int AntiDeadlockTimer = 10;
+		while( GlobalData.ThreadIsRunning == 0 && AntiDeadlockTimer > 0 )
+		{
+			AntiDeadlockTimer--;
+			Sleep( 100 );
+		}
 		PostQuitMessage(0);
-		break;
+	}break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}

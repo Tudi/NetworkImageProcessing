@@ -25,7 +25,7 @@ ClientNetwork::ClientNetwork( char *IP, char *Port )
     if (iResult != 0) 
 	{
         printf("WSAStartup failed with error: %d\n", iResult);
-        exit(1);
+        return;
     }
 
 	// set address info
@@ -42,7 +42,7 @@ ClientNetwork::ClientNetwork( char *IP, char *Port )
     {
         printf("getaddrinfo failed with error: %d\n", iResult);
         WSACleanup();
-        exit(1);
+        return;
     }
 
     // Attempt to connect to an address until one succeeds
@@ -55,7 +55,7 @@ ClientNetwork::ClientNetwork( char *IP, char *Port )
 		{
             printf("socket failed with error: %ld\n", WSAGetLastError());
             WSACleanup();
-            exit(1);
+            return;
         }
 
 		MaxSocketBufferSize = 16 * 65535;
@@ -84,7 +84,7 @@ ClientNetwork::ClientNetwork( char *IP, char *Port )
     {
         printf("Unable to connect to server!\n");
         WSACleanup();
-        exit(1);
+        return;
     }
 
 	// Set the mode of the socket to be nonblocking
