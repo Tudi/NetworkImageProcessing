@@ -16,7 +16,7 @@ void SoundReadWriteDataThread( void *arg )
 	{
 		int ReadCount = Param->DataReader->ReceivePacketNonBlocking( (char*)buff, MaxBuffSize );
 		Param->Buffer->StoreNetworkData( buff, ReadCount );
-		printf( "Received %d data\n", ReadCount );
+//		printf( "Received %d data\n", ReadCount );
 	}
 	GlobalData.ThreadsAliveCount--;
 	delete arg;

@@ -17,16 +17,22 @@ void ConvertLineToParam( char *Line )
 		char	StrValue[ FILE_LINE_LENGTH ];
 		strcpy_s( StrValue, FILE_LINE_LENGTH, ValueStart );
 
-		if( strstr( Line, "CapturePCIP" ) )
-			GlobalData.CapturePCIP = _strdup( StrValue );
-		else if( strstr( Line, "CapturePCPort" ) )
-			GlobalData.CapturePCPort = _strdup( StrValue );
+		if( strstr( Line, "VideoCapturePCIP" ) )
+			GlobalData.VideoNetworkIP = _strdup( StrValue );
+		else if( strstr( Line, "VideoCapturePCPort" ) )
+			GlobalData.VideoNetworkPort = _strdup( StrValue );
+		else if( strstr( Line, "AudioCapturePCIP" ) )
+			GlobalData.AudioNetworkIP = _strdup( StrValue );
+		else if( strstr( Line, "AudioCapturePCPort" ) )
+			GlobalData.AudioNetworkPort = _strdup( StrValue );
 		else if( strstr( Line, "FPSLimit" ) )
 			GlobalData.FPSLimit = atoi( StrValue );
-		else if( strstr( Line, "MaxNetworkPacketSize" ) )
-			GlobalData.MaxPacketSize = atoi( StrValue );
+//		else if( strstr( Line, "MaxNetworkPacketSize" ) )
+//			GlobalData.MaxPacketSize = atoi( StrValue );
 		else if( strstr( Line, "ShowStatistics" ) )
 			GlobalData.ShowStatistics = atoi( StrValue );
+		else if( strstr( Line, "ForcedAudioLatency" ) )
+			GlobalData.ForcedAudioLatency = atoi( StrValue );
 	}
 }
 
@@ -48,10 +54,13 @@ int ReadLine( FILE *file, char *Store, int MaxLen )
 	return StoreIndex;
 }
 
-void LoadSettingsFromFile( )
+void LoadSettingsFromFile( char *FileName )
 {
 	FILE *inf;
-	errno_t err = fopen_s( &inf, "Config.txt", "rt" );
+	if( FileName != NULL )
+		errno_t err = fopen_s( &inf, FileName, "rt" );
+	else
+		errno_t err = fopen_s( &inf, "Config.txt", "rt" );
 	if( inf )
 	{
 		char buff[ FILE_LINE_LENGTH ];

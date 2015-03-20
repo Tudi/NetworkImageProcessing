@@ -261,6 +261,10 @@
 			Name="Source Files Shared"
 			>
 			<File
+				RelativePath="..\VideoEncodeOverNetworkGamer\GamerPCDefines.h"
+				>
+			</File>
+			<File
 				RelativePath="..\VideoEncodeOverNetworkGamer\NetworkPackets.h"
 				>
 			</File>

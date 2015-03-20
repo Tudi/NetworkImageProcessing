@@ -2,9 +2,15 @@
 FPSLimit=20
 
 @ The IP of the PC you will use to play the game
-CapturePCIP=192.168.2.21
-CapturePCPort=6888
-MaxNetworkPacketSize=14440000
+VideoCapturePCIP=192.168.2.21
+VideoCapturePCPort=6888
+
+@ Only valid for audio transfer program
+AudioCapturePCIP=127.0.0.1
+AudioCapturePCPort=6889
+
+@ If audio is in front of video due to encoding settings. You can force audio to start lagging. Value is in milliseconds
+ForcedAudioLatency=1000
 
 @ Show statistics about what goes on inside the program. As funny this sounds, this does eat up CPU :P
 @ 0 - none

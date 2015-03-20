@@ -15,6 +15,7 @@
 #include "../VideoEncodeOverNetworkGamer/Tools.h"
 #include "../VideoEncodeOverNetworkGamer/NetworkPackets.h"
 #include "../VideoEncodeOverNetworkGamer/ServerNetwork.h"
+#include "../VideoEncodeOverNetworkGamer/IniReader.h"
 
 #include "AudioRecord.h"
 #include "../AudioPlayback/AudioPlayback.h"

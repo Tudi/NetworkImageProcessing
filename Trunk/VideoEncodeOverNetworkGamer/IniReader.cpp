@@ -43,8 +43,10 @@ void ConvertLineToParam( char *Line )
 			GlobalData.ShowStatistics = atoi( StrValue );
 //		else if( strstr( Line, "EncoderIP" ) )
 //			GlobalData.EncoderIP = _strdup( StrValue );
-		else if( strstr( Line, "ListenPort" ) )
+		else if( strstr( Line, "VideoListenPort" ) )
 			GlobalData.VideoNetworkPort = _strdup( StrValue );
+		else if( strstr( Line, "AudioListenPort" ) )
+			GlobalData.AudioNetworkPort = _strdup( StrValue );
 //		else if( strstr( Line, "MaxNetworkPacketSize" ) )
 //			GlobalData.MaxPacketSize = atoi( StrValue );
 		else if( strstr( Line, "ReduceColorDepth" ) )
@@ -82,12 +84,16 @@ int ReadLine( FILE *file, char *Store, int MaxLen )
 	return StoreIndex;
 }
 
-void LoadSettingsFromFile( )
+void LoadSettingsFromFile( char *FileName )
 {
 	memset( &GlobalData, 0, sizeof( GlobalData ) );
 
 	FILE *inf;
-	errno_t err = fopen_s( &inf, "Config.txt", "rt" );
+	if( FileName != NULL )
+		errno_t err = fopen_s( &inf, FileName, "rt" );
+	else
+		errno_t err = fopen_s( &inf, "Config.txt", "rt" );
+
 	if( inf )
 	{
 		char buff[ FILE_LINE_LENGTH ];

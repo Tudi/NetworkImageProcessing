@@ -6,12 +6,12 @@ AudioBufferStore	AudioStore;
 
 void main()
 {
-	memset( &GlobalData, 0, sizeof( GlobalData ) );
+	LoadSettingsFromFile( "../VideoEncodeOverNetworkEncoder/Config.txt" );
 
 	AudioStore.SetCacheDuration( 10 );
 //	AudioStore.DebugForceStopRecordSeconds = 20;
 
-	ClientNetwork *NetworkReader = new ClientNetwork( "127.0.0.1", "6969" );
+	ClientNetwork *NetworkReader = new ClientNetwork( GlobalData.AudioNetworkIP, GlobalData.AudioNetworkPort );
 
 	if( NetworkReader->ConnectSocket == INVALID_SOCKET )
 	{
@@ -33,7 +33,7 @@ void main()
 	}
 	if( AudioStore.GetAvailableFrames() > 0 )
 	{
-//		Sleep( 1000 );	//to be able to make it echo echo echo echo
+		Sleep( GlobalData.ForcedAudioLatency );	//to be able to make it echo echo echo echo
 		_beginthread( PlayAudioStream, 0, (void*)NULL );
 	}
 

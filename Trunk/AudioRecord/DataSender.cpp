@@ -25,7 +25,7 @@ void SoundReadWriteDataThread( void *arg )
 			Sleep( 10 );
 			continue;
 		}
-		printf( "Sending %d data\n", CanSendNow );
+//		printf( "Sending %d data\n", CanSendNow );
 		Param->DataSender->sendToAll( (char*)buff, CanSendNow );
 	}
 	GlobalData.ThreadsAliveCount--;

@@ -685,7 +685,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 			GlobalData.FPSLimit = 15;
 
 		stringPointer = (char*) Marshal::StringToHGlobalAnsi( this->FC_E_Port->Text ).ToPointer();
-		if( GlobalData.EncoderPort == NULL )
+		if( GlobalData.VideoNetworkPort == NULL )
 		{
 			this->FC_E_Port->ReadOnly = true;
 			//start statistics update thread ( only once )
@@ -693,7 +693,7 @@ private: System::Windows::Forms::Label^  FC_L_Stat_CPU1;
 //			TimerCallback^ tcb = gcnew TimerCallback( statusChecker, &StatusChecker::CheckStatus);
 			m_oWorker->RunWorkerAsync();
 		}
-		GlobalData.EncoderPort = _strdup( stringPointer );
+		GlobalData.VideoNetworkPort = _strdup( stringPointer );
 
 		if( this->FC_C_BorderIncl->Checked )
 			GlobalData.IncludeWindowBorder = 1;

@@ -231,6 +231,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\VideoEncodeOverNetworkEncoder\IniReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\VideoEncodeOverNetworkEncoder\IniReader.h"
+				>
+			</File>
+			<File
 				RelativePath="..\VideoEncodeOverNetworkGamer\NetworkPackets.h"
 				>
 			</File>

@@ -3,6 +3,6 @@
 
 struct GlobalStateStore;
 
-void LoadSettingsFromFile( );
+void LoadSettingsFromFile( char *FileName );
 
 #endif

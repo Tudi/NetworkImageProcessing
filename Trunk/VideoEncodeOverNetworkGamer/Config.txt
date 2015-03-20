@@ -48,7 +48,8 @@ FPSLimit=20
 ShowStatistics=2
 
 @ The IP of the PC you will use to encode
-ListenPort=6888
-MaxNetworkPacketSize=14440000
+VideoListenPort=6888
+@ Only valid for audio transfer program
+AudioListenPort=6889
 
 @ Best Speed Setup : Resize the images as much as you can. Use Resize method 1. If image size is small enough than do not use compression when sending over network.

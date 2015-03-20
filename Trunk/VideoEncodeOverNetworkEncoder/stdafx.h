@@ -22,24 +22,13 @@
 #include <assert.h>
 
 #include "../VideoEncodeOverNetworkGamer/NetworkPackets.h"
+#include "../VideoEncodeOverNetworkGamer/GamerPCDefines.h"
 #include "IniReader.h"
 #include "../VideoEncodeOverNetworkGamer/PreciseTimer.h"
 #include "../VideoEncodeOverNetworkGamer/zlib.h"
 #include "ClientNetwork.h"
 
 void MyMain();
-
-struct GlobalStore
-{
-	HWND	WndSrc;
-	int		FPSLimit;
-	char	*CapturePCIP;
-	char	*CapturePCPort;
-	int		MaxPacketSize;
-	int		ThreadIsRunning;
-	int		ShowStatistics;
-	int		UseCustomPicureSize,Width,Height;
-};
 
 extern GlobalStore GlobalData;
 

@@ -138,7 +138,7 @@ void ListenAndPaint( void *arg )
 	unsigned char		*ZlibOutputBuffer = NULL;
 	unsigned int		ZlibBufferSize;
 
-	ClientNetwork NetworkListener( GlobalData.CapturePCIP, GlobalData.CapturePCPort );
+	ClientNetwork NetworkListener( GlobalData.VideoNetworkIP, GlobalData.VideoNetworkPort );
 
 	//do we have a source window or a desktop ?
 	int SrcWidth, SrcHeight;
@@ -158,7 +158,7 @@ void ListenAndPaint( void *arg )
 	ZlibBufferSize = MAX_RESOLUTION_SUPPORTED * RGB_BYTE_COUNT + sizeof( NetworkPacketHeader ) + 128;
 	ZlibInputBuffer = (unsigned char*)malloc( ZlibBufferSize );
 	ZlibOutputBuffer = (unsigned char*)malloc( ZlibBufferSize );
-	assert( SrcWidth * SrcHeight * RGB_BYTE_COUNT < GlobalData.MaxPacketSize );
+//	assert( SrcWidth * SrcHeight * RGB_BYTE_COUNT < GlobalData.MaxPacketSize );
 
 	//start the neverending loop
 	StartTimer();
@@ -293,8 +293,15 @@ void ListenAndPaint( void *arg )
 	if( zlib_stream.state != Z_NULL && inflateEnd(&zlib_stream) != Z_OK )
 		assert( false );
 
-	NetworkListener.~ClientNetwork();
+	NetworkListener.CloseConnection();
+}
 
+void ListenAndPaintSelfRestart( void *arg )
+{
+	while( GlobalData.ThreadIsRunning == 1 )
+	{
+		ListenAndPaint( NULL );
+	}
 	GlobalData.ThreadIsRunning = 2;
 
 	if( GlobalData.WndSrc != 0 )
@@ -305,7 +312,7 @@ void ListenAndPaint( void *arg )
 void MyMain()
 {
 	//load the settings from the ini file
-	LoadSettingsFromFile( );
+	LoadSettingsFromFile( "Config.txt" );
 
 	_beginthread( ListenAndPaint, 0, (void*)NULL);
 

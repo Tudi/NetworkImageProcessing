@@ -7,12 +7,12 @@ AudioBufferStore AudioStore;
 
 void main()
 {
-	memset( &GlobalData, 0, sizeof( GlobalData ) );
+	LoadSettingsFromFile( "../VideoEncodeOverNetworkGamer/Config.txt" );
 
 	AudioStore.SetCacheDuration( 10 );
 //	AudioStore.DebugForceStopRecordSeconds = 20;
 
-	ServerNetwork *NetworkSender = new ServerNetwork( "127.0.0.1", "6969" );
+	ServerNetwork *NetworkSender = new ServerNetwork( GlobalData.AudioNetworkIP, GlobalData.AudioNetworkPort );
 
 	GlobalData.ThreadIsRunning = 1;
 
@@ -26,7 +26,7 @@ void main()
 	StartDataFeederThread( NetworkSender, &AudioStore );
 
 //	Sleep( 1000 );	//infinite echo incoming if tested on same PC
-	printf("Started playback\n");
+//	printf("Started playback\n");
 //	_beginthread( PlayAudioStream, 0, (void*)NULL );
 
 	printf("press any key to exit\n");

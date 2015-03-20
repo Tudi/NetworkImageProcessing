@@ -15,14 +15,18 @@ struct GlobalStore
 	int				ShowStatistics;
 	char			*VideoNetworkIP;
 	char			*VideoNetworkPort;
+	char			*AudioNetworkIP;
+	char			*AudioNetworkPort;
 //	int				MaxPacketSize;
 	int				ThreadIsRunning;
 	int				IncludeWindowBorder;
 	int				StartX,StartY,ForcedWidth,ForcedHeight;
 	int				StatAvgNetworkUsage, StatMaxPossibleFPS, StatAvgFPS;
 	float			StatLastCPUUsage;
-	char			*SoundNetworkPort;
 	int				ThreadsAliveCount;
+	int				ForcedAudioLatency;
+	int				UseCustomPicureSize;
+	int				Width,Height;
 };
 
 extern GlobalStore GlobalData;
