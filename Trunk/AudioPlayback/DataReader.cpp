@@ -19,7 +19,7 @@ void SoundReadWriteDataThread( void *arg )
 		if( ReadCount > 0 && GlobalData.ThreadIsRunning == 1 )
 		{
 			Param->Buffer->StoreNetworkData( buff, ReadCount );
-			printf( "%d) Received %d data\n", PacketCounter++, ReadCount );
+//			printf( "%d) Received %d data\n", PacketCounter++, ReadCount );
 		}
 	}
 	GlobalData.ThreadsAliveCount--;
