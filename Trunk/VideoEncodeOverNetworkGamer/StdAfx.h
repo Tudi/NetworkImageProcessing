@@ -15,7 +15,9 @@
 #include <memory.h>
 //#include <tchar.h>
 
-//#define CAN_USE_ATL_IMG
+#ifndef LIB_BUILD
+	#define CAN_USE_ATL_IMG
+#endif
 
 // TODO: reference additional headers your program requires here
 #include <stdio.h>

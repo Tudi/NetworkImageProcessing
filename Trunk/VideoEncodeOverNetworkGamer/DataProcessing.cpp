@@ -188,7 +188,7 @@ void ScreenCaptureAndSendThread( void *arg )
 	StartTimer();
 	int LoopCounter = 1;
 	int FPSSum = 0;
-	int PacketSizeSum = 0;
+	__int64 PacketSizeSum = 0;
 	int StartLoopStamp = GetTickCount();
 	signed int SleepAdjustment = 0;
 

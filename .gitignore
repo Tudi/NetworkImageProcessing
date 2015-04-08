@@ -2,3 +2,17 @@ Trunk/VideoEncodeOverNetworkEncoder/Debug/
 Trunk/VideoEncodeOverNetworkEncoder/Release/
 Trunk/VideoEncodeOverNetworkGamer/Release/
 Trunk/VideoEncodeOverNetworkGamer/Debug/
+Trunk/VideoEncodeOverNetworkGamer/DebugLib/
+Trunk/VideoEncodeOverNetworkGamerGUI/Debug/
+Release/EncoderPC/Debug.txt
+Trunk/VideoEncodeOverNetworkEncoder/Debug.txt
+Trunk/VideoEncodeOverNetworkGamer/ReleaseLib/
+Trunk/VideoEncodeOverNetworkGamerGUI/Release/
+Trunk/capturesound/
+Trunk/loopback-capture/
+Trunk/AudioRecord/Debug/
+Trunk/AudioPlayback/Debug/
+Trunk/AudioRecord/DebugLib/
+Trunk/AudioRecord/ReleaseLib/
+Trunk/AudioPlayback/DebugLib/
+Trunk/AudioPlayback/ReleaseLib/

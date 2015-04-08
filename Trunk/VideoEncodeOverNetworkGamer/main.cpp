@@ -7,7 +7,7 @@ GlobalStore GlobalData;
 void main()
 {
 	//load the settings from the ini file
-	LoadSettingsFromFile( );
+	LoadSettingsFromFile( NULL );
 
 	InitDataProcessing();
 
